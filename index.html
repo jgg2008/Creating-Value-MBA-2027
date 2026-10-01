@@ -1,0 +1,1483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Dry Season · Nine Decisions</title>
+<style>
+:root{
+  --navy:#1E2761; --navy2:#2E3D8F; --ice:#CADCFC; --gold:#E0A93E; --goldd:#8C6212;
+  --tint:#FBF3E1; --card:#F4F6FC; --ink:#2B2F3A; --gray:#5A6072;
+  --brick:#B5483F; --steel:#50808E; --line:#E3E7F2; --bg:#EEF0F8; --paper:#fff;
+  --lowc:#B5483F; --midc:#E0A93E; --highc:#5B9EC9;
+  --serif:Georgia,'Cambria',serif;
+  --sans:-apple-system,'Segoe UI',Roboto,Arial,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0F1224; --paper:#171B33; --card:#1F2440; --tint:#2A2A20; --ink:#E9ECF7; --gray:#AEB4C8;
+    --line:#2F3556; --ice:#CADCFC; --navy:#26307A; --navy2:#3546A8; --goldd:#E8C46A;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0F1224; --paper:#171B33; --card:#1F2440; --tint:#2A2A20; --ink:#E9ECF7; --gray:#AEB4C8;
+  --line:#2F3556; --navy:#26307A; --navy2:#3546A8; --goldd:#E8C46A;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{background:var(--bg)}
+body{font-family:var(--sans);background:var(--bg);color:var(--ink);line-height:1.5;-webkit-font-smoothing:antialiased}
+button{font-family:inherit;cursor:pointer;color:inherit}
+:focus-visible{outline:3px solid var(--gold);outline-offset:2px}
+.app{max-width:480px;margin:0 auto;min-height:100dvh;background:var(--paper);display:flex;flex-direction:column}
+
+/* ---- score header ---- */
+.scoreboard{position:sticky;top:0;z-index:20;background:#1E2761;color:#fff;padding:.6rem .8rem .55rem;box-shadow:0 2px 10px rgba(20,26,64,.35)}
+.sb-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:.45rem}
+.sb-top .t{font-family:var(--serif);font-weight:bold;font-size:.95rem}
+.sb-top .t em{color:var(--gold);font-style:normal}
+.sb-top .stage{font-size:.66rem;color:var(--ice);letter-spacing:.1em;text-transform:uppercase;text-align:right}
+.dims{display:grid;grid-template-columns:repeat(4,1fr);gap:.3rem .55rem}
+.dim{font-size:.6rem;color:var(--ice)}
+.dim .bar{height:5px;background:rgba(202,220,252,.25);border-radius:99px;overflow:hidden;margin-top:2px}
+.dim .fill{height:100%;border-radius:99px;background:var(--midc);transition:width .6s ease,background .6s}
+.dim .fill.low{background:var(--lowc)}
+.dim .fill.high{background:var(--highc)}
+.dim .lab{display:flex;justify-content:space-between}
+.dim .lab .v{font-weight:700}
+.dim.warn .lab .v{color:#FFB3AB}
+.dim.top .lab .v{color:#A9D6F5}
+.dots{display:flex;gap:.3rem;justify-content:center;margin-top:.55rem;flex-wrap:wrap}
+.dot{width:7px;height:7px;border-radius:50%;background:rgba(202,220,252,.35)}
+.dot.on{background:var(--gold)}
+
+/* ---- screens ---- */
+.screen{padding:1.15rem 1.1rem 2rem;display:none;flex:1}
+.screen.active{display:block;animation:up .35s ease}
+@keyframes up{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+.eyebrow{font-size:.66rem;font-weight:700;letter-spacing:.18em;color:var(--goldd);text-transform:uppercase;margin-bottom:.45rem}
+h1,h2{font-family:var(--serif);color:var(--navy);line-height:1.2}
+:root[data-theme="dark"] h1,:root[data-theme="dark"] h2{color:#CADCFC}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) h1,:root:not([data-theme="light"]) h2{color:#CADCFC}}
+h1{font-size:1.75rem;margin-bottom:.7rem}
+h2{font-size:1.3rem;margin-bottom:.55rem}
+h3{font-family:var(--serif);font-size:1rem;color:var(--navy);margin:.9rem 0 .4rem}
+:root[data-theme="dark"] h3{color:#CADCFC}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) h3{color:#CADCFC}}
+p.ctx{font-size:.92rem;color:var(--ink);margin-bottom:.9rem}
+.sesion{background:var(--card);border-left:4px solid var(--gold);border-radius:0 11px 11px 0;padding:.55rem .8rem;font-size:.8rem;color:var(--gray);margin-bottom:.8rem}
+.sesion b{color:var(--ink)}
+.notice{background:var(--tint);border-radius:11px;padding:.6rem .8rem;font-size:.8rem;margin-bottom:.55rem;color:var(--goldd)}
+.notice.bad{background:#F9EDEC;color:var(--brick)}
+.notice.crisis{background:#F9EDEC;color:var(--brick);border:1.5px solid var(--brick)}
+.notice.bonus{background:#EAF3F9;color:#2C6C95;border:1.5px solid var(--highc)}
+.notice b{display:block;font-size:.86rem;margin-bottom:.15rem}
+.qcard{background:var(--card);border-radius:14px;padding:1rem;margin-top:.4rem}
+.qcard .q{font-weight:700;font-size:.98rem;color:var(--navy);margin-bottom:.75rem}
+:root[data-theme="dark"] .qcard .q{color:#CADCFC}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .qcard .q{color:#CADCFC}}
+.voices{margin:.2rem 0 .9rem}
+.voice{display:flex;gap:.55rem;margin-bottom:.5rem;font-size:.82rem;align-items:flex-start}
+.voice .who{flex:none;width:6.2rem;font-size:.66rem;font-weight:700;line-height:1.25;padding-top:.15rem;color:var(--gray)}
+.voice .who i{display:block;width:100%;height:3px;border-radius:99px;margin-top:.25rem}
+.voice .say{flex:1;background:var(--paper);border:1px solid var(--line);border-radius:0 12px 12px 12px;padding:.5rem .7rem;font-style:italic;color:var(--ink)}
+.opt{display:block;width:100%;text-align:left;background:var(--paper);border:1.5px solid var(--line);border-radius:12px;padding:.75rem .85rem;margin-bottom:.6rem;transition:border-color .15s,transform .15s}
+.opt:active{transform:scale(.985)}
+.opt:hover{border-color:var(--gold)}
+.cutbox{margin-top:.9rem;border-top:1px dashed var(--line);padding-top:.75rem}
+.cutbox .cut-t{font-weight:700;font-size:.86rem;color:var(--navy)}
+.cutbox .cut-t span{font-weight:400;color:var(--gray);font-size:.76rem}
+.cutbox .cut-d{font-size:.76rem;color:var(--gray);margin:.25rem 0 .55rem;line-height:1.4}
+.cut-chips{display:flex;flex-wrap:wrap;gap:.4rem}
+.cutc{background:var(--paper);border:1.5px solid var(--line);border-radius:999px;padding:.38rem .7rem;font-size:.78rem;color:var(--ink)}
+.cutc.sel{border-color:var(--brick);background:#F9EDEC;color:var(--brick);font-weight:700}
+.cut-note{font-size:.78rem;color:var(--brick);background:#F9EDEC;border-radius:10px;padding:.5rem .7rem;margin:.2rem 0 .6rem;line-height:1.4}
+:root[data-theme="dark"] .cutbox .cut-t{color:#CADCFC}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .cutbox .cut-t{color:#CADCFC}}
+.opt b{display:block;font-size:.9rem;color:var(--ink)}
+.opt small{display:block;font-size:.74rem;color:var(--gray);font-style:italic;margin-top:.15rem}
+.opt .tags{display:flex;flex-wrap:wrap;align-items:center;gap:.25rem;margin-top:.45rem}
+.opt .tags .tl{font-size:.62rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--gray);margin-right:.1rem}
+.opt .tags .tag{font-size:.64rem;color:var(--gray);background:var(--card);border:1px solid var(--line);border-radius:99px;padding:.08rem .45rem;line-height:1.3}
+.btn{display:block;width:100%;background:#1E2761;color:#fff;border:none;border-radius:12px;padding:.85rem;font-size:.95rem;font-weight:700;margin-top:1rem}
+.btn:hover{background:#2E3D8F}
+.btn.gold{background:var(--gold);color:#1E2761}
+.btn.ghost{background:var(--paper);color:var(--navy);border:1.5px solid var(--line)}
+.idbox{background:var(--card);border-radius:14px;padding:.85rem 1rem;margin:.4rem 0 .9rem}
+.idbox label{display:block;font-size:.78rem;color:var(--gray);margin:.35rem 0 .2rem}
+.idbox input{width:100%;box-sizing:border-box;font:inherit;font-size:.95rem;padding:.55rem .7rem;border:1.5px solid var(--line);border-radius:10px;background:var(--paper);color:var(--ink)}
+.idbox input:focus{outline:none;border-color:var(--gold)}
+.idbox .idnote{font-size:.74rem;color:var(--gray);margin-top:.4rem}
+.idbox .idwarn{font-size:.78rem;color:var(--brick);margin-top:.4rem;display:none}
+.gate{background:var(--card);border-radius:16px;padding:1.1rem 1rem;margin:.6rem 0}
+.gate input{width:100%;box-sizing:border-box;font:inherit;font-size:1.35rem;letter-spacing:.35em;text-align:center;text-transform:uppercase;padding:.6rem .7rem;border:1.5px solid var(--line);border-radius:12px;background:var(--paper);color:var(--ink);margin:.6rem 0 .4rem}
+.gate input:focus{outline:none;border-color:var(--gold)}
+.gate .gerr{font-size:.8rem;color:var(--brick);min-height:1.2em;margin:.2rem 0 .4rem}
+.gate .ghint{font-size:.78rem;color:var(--gray)}
+.jump button.locked{opacity:.55}
+.sendstatus{font-size:.76rem;color:var(--gray);text-align:center;margin:.2rem 0 .6rem}
+.sendstatus.ok{color:#2C6C95}
+.sendstatus.err{color:var(--brick)}
+:root[data-theme="dark"] .btn.ghost{color:#CADCFC}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .btn.ghost{color:#CADCFC}}
+.btn.danger{background:var(--brick);color:#fff}
+.jump{display:grid;grid-template-columns:repeat(9,1fr);gap:.3rem;margin-top:.5rem}
+.jump button{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:.45rem 0;font-size:.8rem;font-weight:700;color:var(--ink)}
+.jump button:hover{border-color:var(--gold)}
+
+/* ---- feedback ---- */
+.fb-tag{font-size:.64rem;font-weight:700;letter-spacing:.18em;color:var(--goldd)}
+.fb-box{background:var(--tint);border-radius:13px;padding:.9rem 1rem;margin:.6rem 0 .5rem;font-size:.9rem;color:var(--ink)}
+.marco{font-size:.74rem;color:var(--gray);margin-bottom:.9rem}
+.marco b{color:var(--goldd)}
+.chips{display:flex;flex-wrap:wrap;gap:.4rem;margin-bottom:.4rem}
+.chipd{font-size:.72rem;font-weight:700;border-radius:99px;padding:.25rem .65rem}
+.chipd.pos{background:#EAF3F9;color:#2C6C95}
+.chipd.neg{background:#F9EDEC;color:var(--brick)}
+.chosen{font-size:.8rem;color:var(--gray);margin-bottom:.5rem}
+.chosen b{color:var(--ink)}
+
+/* ---- intro / ending ---- */
+.hero{background:#1E2761;color:#fff;border-radius:0 0 22px 22px;padding:1.6rem 1.1rem 1.4rem;margin:-1.15rem -1.1rem 1.1rem}
+.hero .eyebrow{color:var(--gold)}
+.hero h1{color:#fff}
+.hero p{color:var(--ice);font-size:.9rem}
+.dimlist{margin:.9rem 0}
+.dimlist div{display:flex;gap:.55rem;font-size:.85rem;margin-bottom:.45rem;align-items:flex-start}
+.dimlist span.ic{flex:none;width:1.5rem;height:1.5rem;border-radius:7px;background:var(--card);display:grid;place-items:center;font-size:.8rem}
+.rules{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin:.6rem 0 .9rem}
+.rules div{border-radius:11px;padding:.6rem .7rem;font-size:.78rem}
+.rules .r1{background:#F9EDEC;color:var(--brick)}
+.rules .r2{background:#EAF3F9;color:#2C6C95}
+.rules b{display:block;font-size:1.1rem;font-family:var(--serif)}
+.score-final{background:var(--card);border-radius:14px;padding:1rem;margin:.9rem 0}
+.sf-row{display:flex;align-items:center;gap:.6rem;margin-bottom:.5rem;font-size:.78rem}
+.sf-row .nm{width:92px;flex:none;color:var(--gray)}
+.sf-row .bar{flex:1;height:9px;background:var(--line);border-radius:99px;overflow:hidden}
+.sf-row .fill{height:100%;border-radius:99px}
+.sf-row .val{width:30px;text-align:right;font-weight:700;color:var(--navy)}
+:root[data-theme="dark"] .sf-row .val{color:#CADCFC}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .sf-row .val{color:#CADCFC}}
+.ending{border-radius:14px;padding:1rem 1.05rem;margin:.7rem 0;font-size:.9rem}
+.ending h2{margin-bottom:.35rem}
+.ending.win{background:var(--tint)}
+.ending.mid{background:var(--card)}
+.ending.bad{background:#F9EDEC;color:#2B2F3A}
+.ending.bad h2{color:var(--brick)}
+.kpis{display:grid;grid-template-columns:1fr 1fr;gap:.5rem;margin:.6rem 0}
+.kpi{background:var(--card);border-radius:12px;padding:.6rem .75rem}
+.kpi span{display:block;font-size:.68rem;color:var(--gray)}
+.kpi b{font-family:var(--serif);font-size:1.35rem;color:var(--navy)}
+:root[data-theme="dark"] .kpi b{color:#CADCFC}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) .kpi b{color:#CADCFC}}
+.loglist{font-size:.8rem;color:var(--gray);margin:.6rem 0 1rem}
+.loglist li{margin-bottom:.35rem;margin-left:1rem}
+.loglist b{color:var(--ink)}
+.lessons div{background:var(--paper);border:1px solid var(--line);border-radius:11px;padding:.6rem .8rem;font-size:.82rem;margin-bottom:.5rem}
+.lessons .ok{background:var(--tint)}
+.lessons .miss{background:var(--card)}
+.small{font-size:.72rem;color:var(--gray);text-align:center;margin-top:1.2rem}
+.qclase{background:var(--paper);border:1.5px dashed var(--gold);border-radius:12px;padding:.7rem .85rem;font-size:.85rem;margin:.8rem 0}
+.qclase ol{margin:.35rem 0 0 1.15rem;padding:0}
+.qclase li{margin:.35rem 0;line-height:1.45}
+.qclase b{display:block;color:var(--goldd);font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;margin-bottom:.25rem}
+@media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+</head>
+<body>
+<div class="app">
+  <div class="scoreboard" id="scoreboard" style="display:none">
+    <div class="sb-top">
+      <span class="t">Dry <em>Season</em> · 9 decisions</span>
+      <span class="stage" id="sb-stage">Stage 1</span>
+    </div>
+    <div class="dims" id="dims"></div>
+    <div class="dots" id="dots"></div>
+  </div>
+  <div id="screens"></div>
+</div>
+
+<script>
+/* =====================================================================
+   INSTRUCTOR SETTINGS
+   SHEET_ENDPOINT: URL of the Google Apps Script web app (ends in /exec)
+   that receives the results and writes them to your Google Sheet.
+   Leave it empty ('') to play without logging.
+   ENVIAR_POR_ETAPA (send per stage): true = one row when each session
+   closes (plus the final one); false = only when the game ends (final,
+   game over or Caribbean).
+   GRUPO_FIJO (fixed group): optional group/section label; if you set it,
+   it is used for everyone and the "group" field is not asked.
+   CLAVES (keys): access key per session (session 1 is open, as are any
+   sessions not listed here). Each key can be written in plain text ('A7K2')
+   or as a hash ('sha256:…') so it can't be read in the source code. To
+   get the hash of a new key: open the HTML in the browser, press
+   F12 → Console and type hashKey('THE-KEY'). Upper and lower case are
+   treated the same.
+   CLAVE_MAESTRA (master key): optional, opens any session (for the instructor).
+   ===================================================================== */
+const CONFIG = {
+  SHEET_ENDPOINT: 'https://script.google.com/macros/s/AKfycbwwASzz9VUMZ_8iTDTh4d-XlAypk_zZ04OU1-0pEbprgJUec0MRrIwhMZ2IY5Xp2W4h/exec',
+  ENVIAR_POR_ETAPA: true,
+  GRUPO_FIJO: '',
+  CLAVES: {
+    2:'sha256:998db138e9922f9265ff56f15944910eaf4001c68ead63ac87a385a59f91de7e',
+    3:'sha256:f76a908102e7cec088c47ac81b53adb1fddecd7ab0f05f36c86468ec1407bfda',
+    4:'sha256:bc3870251f045e98cf0e51294b6a179261e1ed46b8642cf5fe3abd03a4f23b01',
+    5:'sha256:59cd1147c9d11e5df2200aa5d118c65d1e3e062e38260cc4f50e8eeee15121d8',
+    6:'sha256:9bb233a05c735e7a53b8a15b537ccacbaf63e38219192d76a880ba7e766ed674',
+    7:'sha256:7ab961f38068161b11d307967121448c2b3ecc7dedffee29256e9cebc1635278',
+    8:'sha256:d92cf453501279c6736e21966b59e0d0930057eba5e5cc2b59515b4a28939a84',
+    9:'sha256:3e1ea5c2fff6da723bc133df0404d3d1c91e290be5f2ab0f40268b267b7110be',
+  },
+  CLAVE_MAESTRA: '',
+};
+
+/* ---- Session keys ---- */
+function sha256hex(str){
+  const K=[0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];
+  let H=[0x6a09e667,0xbb67ae85,0x3c6ef372,0xa54ff53a,0x510e527f,0x9b05688c,0x1f83d9ab,0x5be0cd19];
+  const bytes=new TextEncoder().encode(str), l=bytes.length, padLen=((l+9+63)>>6)<<6, m=new Uint8Array(padLen);
+  m.set(bytes); m[l]=0x80; const dv=new DataView(m.buffer); dv.setUint32(padLen-4, l*8>>>0); dv.setUint32(padLen-8, Math.floor(l*8/4294967296));
+  const rotr=(x,n)=>(x>>>n)|(x<<(32-n)), W=new Uint32Array(64);
+  for(let i=0;i<padLen;i+=64){
+    for(let t=0;t<16;t++) W[t]=dv.getUint32(i+t*4);
+    for(let t=16;t<64;t++){ const s0=rotr(W[t-15],7)^rotr(W[t-15],18)^(W[t-15]>>>3), s1=rotr(W[t-2],17)^rotr(W[t-2],19)^(W[t-2]>>>10); W[t]=(W[t-16]+s0+W[t-7]+s1)>>>0; }
+    let [a,b,c,d,e,f,g,h]=H;
+    for(let t=0;t<64;t++){ const S1=rotr(e,6)^rotr(e,11)^rotr(e,25), ch=(e&f)^(~e&g), T1=(h+S1+ch+K[t]+W[t])>>>0, S0=rotr(a,2)^rotr(a,13)^rotr(a,22), mj=(a&b)^(a&c)^(b&c), T2=(S0+mj)>>>0; h=g;g=f;f=e;e=(d+T1)>>>0;d=c;c=b;b=a;a=(T1+T2)>>>0; }
+    H=[H[0]+a,H[1]+b,H[2]+c,H[3]+d,H[4]+e,H[5]+f,H[6]+g,H[7]+h].map(x=>x>>>0);
+  }
+  return H.map(x=>x.toString(16).padStart(8,'0')).join('');
+}
+const normKey = k => String(k||'').toUpperCase().replace(/\s+/g,'');
+function hashKey(k){ return 'sha256:'+sha256hex(normKey(k)); }
+function keyMatches(stored, input){
+  if(!stored) return true;
+  const s=String(stored);
+  return s.startsWith('sha256:') ? (hashKey(input)===s) : (normKey(s)===normKey(input));
+}
+const UNLOCK_KEY='temporada_seca_unlocked';
+function unlockedSet(){ try{ return new Set(JSON.parse(localStorage.getItem(UNLOCK_KEY)||'[]')); }catch(e){ return new Set(); } }
+function isUnlocked(n){ return !CONFIG.CLAVES || !CONFIG.CLAVES[n] || unlockedSet().has(n); }
+function markUnlocked(n){ const u=unlockedSet(); u.add(n); try{ localStorage.setItem(UNLOCK_KEY, JSON.stringify([...u])); }catch(e){} }
+function checkKey(n, input){
+  if(!normKey(input)) return false;
+  if(CONFIG.CLAVE_MAESTRA && keyMatches(CONFIG.CLAVE_MAESTRA, input)) return true;
+  return keyMatches(CONFIG.CLAVES[n], input);
+}
+
+/* ================= State ================= */
+const DIMS = [
+  {k:'eco', n:'Economic',       ic:'₡', d:'Margin, occupancy and cash to invest.'},
+  {k:'amb', n:'Environmental',  ic:'≈', d:'Water, energy and the hotel’s real footprint: what you can prove with data.'},
+  {k:'rep', n:'Reputation',     ic:'★', d:'What people say about the hotel: in town, on social media and in the rankings.'},
+  {k:'com', n:'Community',      ic:'⌂', d:'Social license: the ASADA (community water board), the neighbors and the town’s suppliers.'},
+  {k:'mot', n:'Team',           ic:'♟', d:'Motivation, skills and retention of your staff.'},
+  {k:'tur', n:'Guests',         ic:'✈', d:'Satisfaction and reviews (six in ten come from the U.S.).'},
+  {k:'due', n:'Owners',         ic:'◆', d:'Trust of the owning family, who believe in sustainability and also want returns.'},
+  {k:'bie', n:'Your wellbeing', ic:'❤', d:'Your energy, your health and your family.'},
+];
+const NAMES = Object.fromEntries(DIMS.map(d=>[d.k,d.n]));
+const START = {eco:65, amb:55, rep:66, com:58, mot:70, tur:74, due:66, bie:62};
+const NEUTRAL = {eco:64, amb:62, rep:64, com:62, mot:65, tur:68, due:64, bie:62};
+const SAVE_KEY = 'temporada_seca_9_v2_en';
+let S, FLAGS, LOG, stageIdx, decIdx, CHECK, CHECK_PREV, OVER, CUTS, CUT;
+let PLAYER = {name:'', group:'', partida:'', modo:'full'};
+const ID_KEY = 'temporada_seca_id';
+const newId = () => Date.now().toString(36)+'-'+Math.random().toString(36).slice(2,6);
+
+function reset(){
+  S = {...START}; FLAGS = new Set(); LOG = []; stageIdx=0; decIdx=0; CHECK=null; CHECK_PREV=null; OVER=null; CUTS={mant:0,pers:0,mkt:0,amb:0}; CUT=null; PLAYER.partida=newId(); PLAYER.modo='full';
+}
+const totalCuts = () => Object.values(CUTS).reduce((a,b)=>a+b,0);
+const has = f => FLAGS.has(f);
+const ord = n => { const s=['th','st','nd','rd'], v=n%100; return n+(s[(v-20)%10]||s[v]||s[0]); };
+
+/* ---- Characters ---- */
+const ROLES = {
+  sos:{n:'Valeria · Sustainability', c:'#3E9C8C'},
+  mkt:{n:'Rodrigo · Marketing', c:'#637EBF'},
+  rh: {n:'Marcela · Human Resources', c:'#D65894'},
+  fin:{n:'Esteban · Finance', c:'#3B666F'},
+  due:{n:'Doña Elena and Don Rafael · Owners', c:'#E0A93E'},
+  ext:{n:'Outside the hotel', c:'#50808E'},
+  fam:{n:'At home', c:'#B5483F'},
+};
+
+/* ================= Crises (< 50) and dividends (≥ 80) ================= */
+const CRISIS = {
+  eco:{t:'Cash in the red', d:'The bank freezes the credit line and suppliers demand cash on delivery. Esteban hands you a payment plan that doesn’t add up.', e:{mot:-4,bie:-5,due:-4}},
+  amb:{t:'Case file opened', d:'The CST audit downgrades you and the environment ministry (MINAE) requests a report on the well. The “sustainable” hotel can’t prove it with data.', e:{rep:-6,eco:-4,due:-3}},
+  rep:{t:'Reputation crisis', d:'A viral thread — “the fake green hotel” — racks up thousands of comments. Cancellations pour in and a U.S. agency pauses its contract.', e:{tur:-7,eco:-6,bie:-3}},
+  com:{t:'Protest at the entrance', d:'Neighbors with signs — “The water belongs to the town” — block the entrance two mornings in a row. A guest livestreams it.', e:{tur:-6,rep:-6,bie:-4,mot:-2}},
+  mot:{t:'Resignations', d:'The chef and two receptionists leave for the hotel next door, which offers better hours. Valeria tells you she is “weighing her options.”', e:{tur:-5,eco:-4,amb:-3,bie:-3}},
+  tur:{t:'Two-star reviews', d:'The OTA drops your ranking; three agencies ask for discounts in exchange for not canceling.', e:{eco:-7,rep:-4,due:-3}},
+  due:{t:'The owners step in', d:'The family hires an outside consultant who goes over your head and reviews every decision. Meetings double.', e:{mot:-4,bie:-6}},
+  bie:{t:'Burnout', d:'The doctor orders ten days of rest. It’s not negotiable.',
+       fn:()=>has('guardianes')?{e:{bie:+8,mot:+2},x:'The hotel ran without you: you had trained it for exactly that. You came back with energy.'}
+                               :{e:{bie:+5,tur:-5,mot:-4,eco:-3},x:'No one else knew how to decide. The hotel improvised for ten days and it showed.'}},
+};
+const BONUS = {
+  eco:{t:'Financial headroom', d:'The bank offers you a preferential green credit line and the owners give you room to invest for the long term.', e:{amb:+2,bie:+2,due:+2}},
+  amb:{t:'CST elite level', d:'The certification moves up a level and the hotel joins the Costa Rica Tourism Board’s (ICT) regenerative tourism list.', e:{rep:+3,eco:+3}},
+  rep:{t:'International press', d:'A travel magazine names you a benchmark for regenerative tourism in Central America.', e:{tur:+3,eco:+3}},
+  com:{t:'The town stands up for you', d:'The ASADA gives you supply priority and neighbors recommend the hotel to their own visitors.', e:{amb:+2,rep:+2}},
+  mot:{t:'The team innovates', d:'Without you asking, the team proposes three new products and two measurable savings.', e:{eco:+3,tur:+2}},
+  tur:{t:'Premium rate', d:'Occupancy and rates rise together: guests come back and recommend you.', e:{eco:+4,rep:+2}},
+  due:{t:'Full mandate', d:'The owners delegate strategy to you and back long-term investments without debating every line.', e:{eco:+2,bie:+2}},
+  bie:{t:'Clarity', d:'You decide calmly and the calm spreads to the team.', e:{mot:+2,rep:+2}},
+};
+const OVERS = {
+  quiebra:{t:'The hotel goes bankrupt', d:'The cash runs out: the bank forecloses on the collateral and the owners sell to an international chain that fills the pool with water trucks and lays off half the town. The drought and the diesel weren’t the cause; they exposed a system with no slack.'},
+  clausura:{t:'Well shut down', d:'MINAE shuts the well for overexploitation and the CST withdraws the certification. Without water or seal, the hotel can’t operate the season.'},
+  marca:{t:'Brand canceled', d:'OTAs, agencies and tour operators drop the hotel from their catalogs. With no sales channel, the season evaporates.'},
+  bloqueo:{t:'Community blockade', d:'The ASADA cuts off the hotel’s supply and the community blocks access. The ICT suspends operations until the conflict is resolved.'},
+  renuncia:{t:'Mass resignation', d:'The chef, the sustainability manager and twelve staff members quit in the same week. There’s no one to serve the guests who did arrive.'},
+  vacio:{t:'Empty hotel', d:'Cancellations outnumber arrivals. With 30% occupancy in high season, the owners close until further notice.'},
+  despido:{t:'The owners replace you', d:'The family lost confidence: they hire an outside manager “with crisis experience.” Your strategy ends up in a drawer.'},
+  colapso:{t:'Personal collapse', d:'Extended medical leave. The owners appoint an interim manager and your family breathes for the first time in months. The hotel carried on; you couldn’t.'},
+  sistemico:{t:'Systemic collapse', d:'Too many fronts below 50 at once: cash, people, community and brand infect one another. The system stops responding to any decision.'},
+};
+
+/* ================= Spending cuts (a lever available in every decision) ================= */
+const CUTAREAS = {
+  mant:{n:'Maintenance', e:{amb:-1,tur:-1}, r:'The savings arrive today; the repair you skipped has a due date, even if you don’t know it yet.'},
+  pers:{n:'Staff',       e:{mot:-2,bie:-1}, r:'The cut hours show up on the payroll; the fatigue and the departures, next season.'},
+  mkt: {n:'Marketing',   e:{rep:-1,tur:-1}, r:'What you stop investing in channels doesn’t show this month; it shows when the operator fills its allotments with another hotel.'},
+  amb: {n:'Environmental program', e:{amb:-2,due:-1}, r:'Without measurement or projects, the “sustainable” hotel loses the evidence that sets it apart; the owners notice first.'},
+};
+const CUT_GAIN = [3,3,2,1,1,0];   /* economic savings depending on how many times you already cut that area; after that there's nothing left to cut */
+const CUT_MULT = n => 1+Math.floor(n/3);   /* collateral damage grows with repetition */
+const CUT_EVENTS = {
+  mant:[{at:3,t:'The bill for deferred maintenance',d:'The well pump and two AC units failed at full occupancy; the emergency repair cost three times the maintenance you skipped.',e:{eco:-4,tur:-4,amb:-2}},
+        {at:6,t:'No spare parts',d:'The generator and the boiler sat idle for a week waiting for parts. Three months of savings gone in one.',e:{eco:-5,tur:-3,amb:-3,due:-2}},
+        {at:9,t:'Partial closure for safety',d:'The municipal engineer closed the south wing: unmaintained wiring and a leak nobody fixed. Ten rooms off the market.',e:{eco:-8,tur:-6,amb:-3,rep:-3}}],
+  pers:[{at:3,t:'Resignations over the cut',d:'Three trained people left for the hotel next door, which pays the hours you cut. Replacing them costs more than keeping them.',e:{mot:-4,tur:-3,com:-2,eco:-2}},
+        {at:6,t:'Service below minimums',d:'Shifts no longer cover occupancy: reviews about slowness and mistakes, and you filling gaps at night.',e:{mot:-5,tur:-4,eco:-3,bie:-3}},
+        {at:9,t:'Labor complaint',d:'The Ministry of Labor showed up over a complaint about unpaid hours; the town knew before you did.',e:{mot:-6,com:-5,rep:-4,eco:-4,bie:-3}}],
+  mkt: [{at:3,t:'Invisible in low season',d:'With no channel presence, low-season bookings fell and the OTAs lowered your ranking.',e:{eco:-4,tur:-2,rep:-2}},
+        {at:6,t:'The competition took your place',d:'Operators filled their allotments with the hotel next door, which did invest in channels.',e:{eco:-5,rep:-3,due:-2}},
+        {at:9,t:'Off the map',d:'No channel, no content and no relationship with agencies: next season starts with half the bookings.',e:{eco:-8,tur:-4,rep:-3,due:-3}}],
+  amb: [{at:3,t:'The environmental program without a budget',d:'The CST auditor found the water program with no records or measurements for the quarter: the certification level dropped.',e:{amb:-4,rep:-3,due:-2}},
+        {at:6,t:'KPI missed',d:'Without measurement or projects, the environmental KPI committed to the bank and the CST isn’t met; the preferential rate is at risk.',e:{amb:-5,rep:-3,eco:-4}},
+        {at:9,t:'“Sustainable” hotel without evidence',d:'The CST withdraws the seal and the bank reclassifies the loan: the hotel can no longer prove anything it promises.',e:{amb:-8,rep:-5,due:-5,eco:-4}}],
+};
+const CUT_FATIGUE = [{at:8,t:'Austerity fatigue',d:'The team reads that the only priority is cash: the workplace climate survey says so in no uncertain terms, and the owners ask what happened to the “sustainable” hotel.',e:{mot:-3,due:-2}},
+  {at:14,t:'A reputation for stinginess',d:'Suppliers demand payment up front, operators ask for guarantees and the town has a nickname for the hotel. Cutting stopped being a decision and became your brand.',e:{rep:-4,tur:-3,com:-3,mot:-2}}];
+
+/* ================= Engine ================= */
+const screens = document.getElementById('screens');
+const dimsEl = document.getElementById('dims');
+const dotsEl = document.getElementById('dots');
+
+function apply(e){
+  const d={};
+  for(const k in e){ if(!(k in S)) continue; const before=S[k]; S[k]=Math.max(0,Math.min(100,S[k]+e[k])); d[k]=S[k]-before; }
+  return d;
+}
+function merge(a,b){ for(const k in b) a[k]=(a[k]||0)+b[k]; return a; }
+function renderBoard(label){
+  document.getElementById('scoreboard').style.display='block';
+  document.getElementById('sb-stage').textContent=label;
+  dimsEl.innerHTML=DIMS.map(d=>{
+    const v=S[d.k];
+    const cls=v<50?'low':(v>=80?'high':'');
+    return `<div class="dim ${v<50?'warn':(v>=80?'top':'')}"><span class="lab"><span>${d.n}</span><span class="v">${v}</span></span><div class="bar"><div class="fill ${cls}" style="width:${v}%"></div></div></div>`;
+  }).join('');
+  dotsEl.innerHTML=[0,1,2,3,4,5,6,7,8].map(i=>`<div class="dot ${i<=stageIdx?'on':''}"></div>`).join('');
+}
+function screen(html){
+  screens.innerHTML=`<div class="screen active">${html}</div>`;
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function chipsHtml(d){
+  const ks=Object.keys(d).filter(k=>d[k]!==0);
+  if(!ks.length) return '<div class="chips"><span class="chipd pos">No change on the board</span></div>';
+  return '<div class="chips">'+ks.map(k=>`<span class="chipd ${d[k]>0?'pos':'neg'}">${d[k]>0?'+':''}${d[k]} ${NAMES[k]}</span>`).join('')+'</div>';
+}
+/* dimensions an option moves (without saying in which direction) */
+function affectsHtml(o){
+  const ks=new Set(Object.keys(o.e||{}).filter(k=>o.e[k]!==0));
+  if(o.mod){ const m=o.mod(); if(m) Object.keys(m).filter(k=>m[k]!==0).forEach(k=>ks.add(k)); }
+  if(o.hint) o.hint.forEach(k=>ks.add(k));
+  const list=DIMS.filter(d=>ks.has(d.k));
+  if(!list.length) return '';
+  return `<span class="tags"><span class="tl">Affects</span>${list.map(d=>`<span class="tag">${d.n}</span>`).join('')}</span>`;
+}
+function voicesHtml(v){
+  if(!v||!v.length) return '';
+  return '<div class="voices">'+v.map(x=>{
+    const r=ROLES[x.w]||ROLES.ext; const who=x.who||r.n;
+    return `<div class="voice"><span class="who">${who}<i style="background:${r.c}"></i></span><span class="say">“${x.t}”</span></div>`;
+  }).join('')+'</div>';
+}
+function stageLabel(st){ return 'Stage '+st.n+' · Session '+st.n; }
+
+/* ---- Persistence (on this device only) ---- */
+function save(phase){
+  try{
+    localStorage.setItem(SAVE_KEY, JSON.stringify({S, F:[...FLAGS], LOG, si:stageIdx, di:decIdx, phase, CHECK, CHECK_PREV, CUTS, PLAYER}));
+  }catch(e){}
+}
+function load(){
+  try{ const raw=localStorage.getItem(SAVE_KEY); return raw?JSON.parse(raw):null; }catch(e){ return null; }
+}
+function clearSave(){ try{ localStorage.removeItem(SAVE_KEY);}catch(e){} }
+function saveIdentity(){ try{ localStorage.setItem(ID_KEY, JSON.stringify({name:PLAYER.name, group:PLAYER.group})); }catch(e){} }
+function loadIdentity(){ try{ const r=localStorage.getItem(ID_KEY); return r?JSON.parse(r):null; }catch(e){ return null; } }
+
+/* ---- Logging results to a Google Sheet (via Apps Script) ---- */
+function resultRow(evento){
+  const st=STAGES[Math.min(stageIdx,STAGES.length-1)];
+  const v=(OVER?null:(typeof verdict==='function'?verdict():null));
+  return {
+    ts:new Date().toISOString(), partida:PLAYER.partida, jugador:PLAYER.name, grupo:PLAYER.group, modo:PLAYER.modo,
+    evento, sesion:st.n,
+    eco:S.eco, amb:S.amb, rep:S.rep, com:S.com, mot:S.mot, tur:S.tur, due:S.due, bie:S.bie,
+    promedio:avg(),
+    veredicto: OVER ? ('Game over: '+OVERS[OVER].t) : (evento==='final'&&v ? v.t : (evento==='caribe' ? 'Alternative ending: Caribbean' : '')),
+    recortes: totalCuts(),
+    recortes_area: Object.keys(CUTS).filter(k=>CUTS[k]).map(k=>CUTAREAS[k].n+' ×'+CUTS[k]).join('; '),
+    decisiones: LOG.map(l=>l.et.replace('Session ','S')+': '+l.l+(l.cut?' [cut: '+l.cut+']':'')).join(' | '),
+    banderas: [...FLAGS].filter(f=>!f.startsWith('cr_')&&!f.startsWith('bo_')&&!f.startsWith('cut_')).join(', '),
+    url: (typeof location!=='undefined'?location.href:'')
+  };
+}
+function setSendStatus(cls, txt){ const el=document.getElementById('sendstatus'); if(el){ el.className='sendstatus '+cls; el.textContent=txt; } }
+function sendRow(evento){
+  if(!CONFIG.SHEET_ENDPOINT) return;
+  const row=resultRow(evento);
+  const body=JSON.stringify(row);
+  const fallback=()=>{ try{
+      const f=document.createElement('form'); f.method='POST'; f.action=CONFIG.SHEET_ENDPOINT; f.target='sheet_sink'; f.style.display='none';
+      const i=document.createElement('input'); i.type='hidden'; i.name='payload'; i.value=body; f.appendChild(i);
+      let fr=document.getElementById('sheet_sink'); if(!fr){ fr=document.createElement('iframe'); fr.name='sheet_sink'; fr.id='sheet_sink'; fr.style.display='none'; document.body.appendChild(fr); }
+      document.body.appendChild(f); f.submit(); setTimeout(()=>f.remove(),4000); setSendStatus('ok','Results sent to the course log.');
+    }catch(e){ setSendStatus('err','The results could not be sent: copy your summary and send it to your instructor.'); } };
+  setSendStatus('', 'Sending results…');
+  try{
+    fetch(CONFIG.SHEET_ENDPOINT, {method:'POST', mode:'no-cors', keepalive:true, headers:{'Content-Type':'text/plain;charset=utf-8'}, body})
+      .then(()=>setSendStatus('ok','Results sent to the course log.'))
+      .catch(fallback);
+  }catch(e){ fallback(); }
+}
+function snapshot(){ return {S:{...S}, F:[...FLAGS], LOG:[...LOG], si:stageIdx, CUTS:{...CUTS}}; }
+function restore(c){ S={...c.S}; FLAGS=new Set(c.F); LOG=[...c.LOG]; stageIdx=c.si; decIdx=0; OVER=null; CUTS=c.CUTS?{...c.CUTS}:{mant:0,pers:0,mkt:0,amb:0}; CUT=null; }
+
+/* ================= Content: nine stages, nine sessions ================= */
+const STAGES = [
+/* ---------- STAGE 1 · Session 1 ---------- */
+{n:1, mes:'September', t:'Two storms on the same horizon',
+ ses:'Sustainability as strategy', marco:'From CSR to shared value in a BANI world (Porter & Kramer; Cascio; Edmans).',
+ ctx:'The national weather service (IMN) confirms a strong El Niño for the dry season (December–April). At the same time, a geopolitical crisis drives diesel prices up 35% in three months: airlines announce surcharges, tour operators raise their rates, and ICE, the state power utility, warns that with less rain it will generate with bunker fuel and electricity rates will rise. You have 90% occupancy booked for December. The owners call a board meeting.',
+ evs:()=>[],
+ dec:[
+  {q:'At the meeting, the owners ask what you plan to do about “the sustainability thing” in the face of both crises.',
+   v:[{w:'due',t:'We founded this hotel to prove it can be done. Let’s do something big: donate water to the town and announce we’ll be carbon neutral.'},
+      {w:'fin',t:'With diesel like this, every dollar counts. Sustainability, yes, but after we protect December’s cash.'},
+      {w:'sos',t:'This isn’t a separate program: water and energy are our business model. We need to map the system before we spend a single colón.'},
+      {w:'mkt',t:'Whatever we do, we have to tell the story now. The competition is quiet; this is our window.'}],
+   opts:[
+    {l:'CSR program: donate water to the community and launch the “carbon neutral hotel” campaign',c:'Cost: budget and a promise with no basis',e:{com:2,rep:1,due:3,eco:-5,amb:-1},flag:['rse','green'],
+     f:'You chose philanthropy and a promise: real social value, but no business decision changed. Porter and Kramer would call this peripheral CSR; and “carbon neutral” without a baseline is an IOU someone will cash. The owners, though, are delighted.',k:'CSR vs. shared value · Porter & Kramer (2006, 2011)'},
+    {l:'Map the system — water, energy, community, supply chain, guests — and treat it as strategy, not as a program',c:'Cost: two weeks and the owners’ patience',e:{mot:2,com:2,amb:2,rep:1,due:-2,bie:-3},flag:['mapa','estrategia'],
+     f:'You treated sustainability as business architecture: you saw thresholds, actors and delays before making a move. In a brittle, nonlinear environment, the map will give you options the competition won’t see. The owners wanted an announcement; you gave them a method.',k:'Sustainability as strategy · BANI (Cascio, 2020)'},
+    {l:'Protect the cash: freeze all non-essential investment until the season is over',c:'Cost: future options and internal credibility',e:{eco:5,mot:-4,amb:-4,rep:-2,due:-3},flag:'tarde',
+     f:'You protected today’s margin and gave up tomorrow’s options. In systems with delays, the signal arrives before the blow: El Niño won’t wait for the quarter to close. Valeria left the meeting without a word.',k:'Brittleness and delays · BANI (Brittle)'},
+    {l:'Commission an ESG diagnostic from a consulting firm before deciding anything',c:'Cost: fees and a two-month wait',e:{due:2,rep:1,eco:-4,mot:-1,bie:1},flag:'tarde',
+     f:'You bought time and a report. The diagnostic will arrive in November with generic recommendations; El Niño won’t read the appendix. Outsourcing strategic thinking is the most expensive way of not deciding.',k:'Strategy vs. compliance · delays (BANI)'},
+    {l:'Hand the topic to Valeria: a sustainability plan with its own budget for the next board meeting',c:'Cost: taking the topic off the table where the business is decided',e:{amb:1,due:1,eco:-2,mot:1},flag:'silo',
+     f:'You handed the topic to a department and took it off the table where the business is decided. Valeria will have a plan and a budget; Esteban and Rodrigo, other priorities. Sustainability as a department is the modern version of peripheral CSR.',k:'Silo vs. integrated strategy'}]},
+  {q:'Rodrigo wants to launch the season campaign. What do you tell the guests who have already booked?',
+   v:[{w:'mkt',t:'If we talk about drought, they cancel. Let’s sell paradise.'},
+      {w:'sos',t:'If we don’t talk, they’ll find out in the shower. Let’s tell them about the water and energy plan.'},
+      {w:'fin',t:'Every cancellation now is cash that doesn’t come back.'}],
+   opts:[
+    {l:'Radical transparency: send the water and energy plan before arrival, along with what we do offer',c:'Cost: some cancellations',e:{eco:-5,rep:3,tur:2,amb:1},flag:'transp',
+     f:'You lost a few bookings and gained something scarcer: guests who arrive as allies. Managed expectations are the best reputation insurance there is.',k:'Managing expectations · trust (Edelman Trust Barometer)'},
+    {l:'Run the season campaign as planned; the rationing gets explained on arrival',c:'Cost: the surprise will be paid for at the front desk',e:{eco:5,bie:1},flag:'silencio',
+     f:'You protected today’s occupancy by mortgaging tomorrow’s satisfaction. Unmanaged expectations are collected at the front desk, with interest.',k:'Deferred reputational risk'},
+    {l:'A “greenest hotel in Guanacaste” campaign',c:'Cost: credibility, if reality doesn’t follow',e:{rep:2,tur:1,due:1},flag:'green',
+     f:'Communicating values without data is an IOU. If December’s reality doesn’t follow, the name for that is greenwashing — and it goes viral.',k:'Greenwashing (you’ll see it in session 8)'},
+    {l:'A short, upbeat message: “dry season, clear skies and new experiences,” without mentioning the rationing',c:'Cost: half the story',e:{eco:2,tur:1,rep:-1},flag:'eufemismo',
+     f:'You told the half that sells. When the rationing shows up in the shower, the guest will remember you talked about the sky. It’s not a lie; it’s a badly managed expectation with good copywriting.',k:'Expectations · selective omission'},
+    {l:'Flexible, penalty-free cancellation for everyone, and explain the context only to those who ask',c:'Cost: cash, and a conversation that never happens',e:{tur:1,eco:-2,rep:1,bie:1},flag:'flex',
+     f:'You covered the legal and financial risk of the expectation without managing it: you gave guests the right to leave, not a reason to stay. Those who didn’t ask will arrive just as surprised.',k:'Managing expectations · a right vs. a reason'}]},
+  {q:'It’s 11 p.m. The owners text you on WhatsApp: “Can we meet tomorrow at 7?” Your partner reminds you it’s been three weeks since you had dinner at home.',
+   v:[{w:'fam',t:'Sofía asks if you’ll be around on Saturday. I’ve stopped telling her yes.'},
+      {w:'due',t:'We know it’s a lot. But this is the year that defines the hotel.'}],
+   opts:[
+    {l:'Accept the meeting and keep going like this: the season demands it',c:'Cost: what doesn’t show up on the income statement',e:{bie:-5,due:1},
+     f:'The hotel gained a morning; your home lost something no indicator records. Burnout gives no warning: it accumulates.',k:'Personal sustainability'},
+    {l:'Propose 9 a.m. and agree with the owners on a working rhythm for the season: schedule, limits, backup',c:'Cost: an uncomfortable conversation',e:{bie:5,mot:1,due:1},flag:'ritmo',
+     f:'You negotiated the system, not just the meeting. An agreed decision rhythm is governance — for you too. In an anxious environment, rhythm is a strategic decision.',k:'Decision rhythms under anxiety · BANI (Anxious)'},
+    {l:'Leave the message on read and reply early tomorrow',c:'Cost: leaving the owners in uncertainty',e:{bie:2,due:-4},
+     f:'You rested, but left the owners without an answer just when they expected leadership. Limits work better when they are agreed than when they are imposed through silence.',k:'Agreed limits vs. imposed limits'},
+    {l:'Reply “sure, at 7” and ask Marcela to cover your afternoon so you can make it home for dinner',c:'Cost: a patch that won’t be there tomorrow',e:{bie:1,due:1,mot:-1},
+     f:'You fixed the day, not the system: tomorrow the message will arrive at 11 again. Calendar patches aren’t rhythm, and Marcela has a home too.',k:'Rhythm vs. patch'},
+    {l:'Delegate the meeting to Esteban: let him present the numbers while you rest',c:'Cost: a board that wanted to see you',e:{bie:3,due:-2,mot:1},
+     f:'You rested and sent the CFO to a meeting that expected the general manager. Delegating meetings isn’t delegating leadership; the owners read it as distance in the very week they were looking for direction.',k:'Delegating tasks vs. delegating presence'}]}
+ ],
+ qc:['What is the operational — not rhetorical — difference between CSR, philanthropy and shared value? Take an initiative from Interface, Patagonia or FIFCO and classify it.','Edmans argues that the “ESG” label should disappear. If he is right, what changes in how a company presents its sustainability strategy to the board?','Porter and Kramer write from the perspective of the multinational. Which assumptions of shared value don’t hold in a company with informal supply chains and scarce capital?','Of the four letters in BANI — brittle, anxious, nonlinear, incomprehensible — which weighs most for a mid-sized company in Latin America, and why?']},
+
+/* ---------- STAGE 2 · Session 2 ---------- */
+{n:2, mes:'October', t:'What matters, and to whom?',
+ ses:'Double materiality', marco:'Financial and impact materiality (ESRS/EFRAG), ex ante materiality (Khan, Serafeim & Yoon), SASB industry lens.',
+ ctx:'Valeria proposes a materiality workshop. There are twenty topics on the table: water, energy and diesel, local employment, waste, estuary biodiversity, safety, subcontractors’ working conditions, the footprint of guests’ flights, supplier prices… Diesel is already up 45% and ICE announces there could be electricity rationing in April, as in 2024. The owners want to “address everything.”',
+ evs:()=>{const ev=[];
+   if(has('mapa')){apply({mot:1});ev.push(['ok','September’s map made the workshop shorter and more useful: the team already knew what it was talking about. (+1 Team)']);}
+   if(has('silo')){apply({mot:-1});ev.push(['bad','Valeria called the materiality workshop; Esteban and Rodrigo sent an assistant. (−1 Team)']);}
+   if(has('tarde')){apply({amb:-3});ev.push(['bad','With no map or priorities, the workshop starts from scratch — in mid-October. (−3 Environmental)']);}
+   return ev;},
+ dec:[
+  {q:'The materiality matrix. How do you build it?',
+   v:[{w:'due',t:'Everything matters. We’re a sustainable hotel: we can’t say biodiversity isn’t a priority.'},
+      {w:'fin',t:'Financial materiality: water, energy and occupancy. The rest is literature.'},
+      {w:'sos',t:'Two directions: how the drought and diesel hit us, and how we hit the aquifer and the town. We have to validate it with the ASADA and our suppliers, not just among ourselves.'},
+      {w:'rh',t:'If four managers run the workshop, the frontline staff won’t feel it’s theirs.'}],
+   opts:[
+    {l:'Double materiality — financial and impact — validated with the team, the ASADA and suppliers; prioritize five topics',c:'Cost: time, and the owners wanted twenty',e:{amb:2,com:3,mot:2,eco:2,due:-2,bie:-3},flag:'matriz',
+     f:'You looked in two directions and let others correct you. Five topics with an owner and a target are worth more than twenty in the “high-high” quadrant. The owners grumble: they wanted estuary biodiversity to be priority number one.',k:'Double materiality · ESRS / EFRAG IG1'},
+    {l:'Financial materiality only: water, energy, occupancy',c:'Cost: what hits the neighbor and not the cash',e:{eco:4,amb:-2,com:-3,rep:-2},flag:'solo_fin',
+     f:'You rigorously prioritized what hits the cash and ignored what hits the neighbor. Impact materiality doesn’t disappear because you don’t measure it: it comes back as a complaint, as regulation or as a WhatsApp voice note.',k:'Financial vs. impact materiality'},
+    {l:'A broad matrix: all twenty topics go in, with the owners sponsoring each one',c:'Cost: the ability to prioritize when April tightens',e:{due:3,mot:-3,amb:-2,eco:-2,bie:-2},flag:'todoalto',
+     f:'A matrix where everything is a priority has stopped prioritizing and turned into a consensus exercise. The team got twenty assignments and no priority; no one knows what to let go of when April tightens.',k:'Quality criteria for a materiality matrix'},
+    {l:'Commission the matrix from a consulting firm using SASB’s hotel industry template',c:'Cost: fees and a matrix no one in town validated',e:{due:2,rep:1,amb:1,eco:-3,com:-1,mot:-1},flag:'matriz_externa',
+     f:'You bought a matrix that is right on average and wrong in the particular: SASB knows what matters for a generic hotel, not that your well shares an aquifer with the ASADA. It ended up as an impeccable PDF; in April you’ll find out what it missed.',k:'SASB industry lens · limits of the template'},
+    {l:'An internal managers’ matrix: five topics, validated with the owners and no one else',c:'Cost: the outside voices',e:{due:2,amb:1,eco:1,mot:-1,com:-2},flag:'matriz_interna',
+     f:'You prioritized, and that’s already a lot. But without outside voices, impact materiality was reduced to what you believe matters to the town. In April the ASADA will tell you whether you got it right.',k:'Stakeholder validation · impact materiality'}]},
+  {q:'Ex ante materiality: Valeria brings three early signals. Which one do you invest attention — and some money — in now?',
+   v:[{w:'sos',t:'ICE is warning of electricity rationing in April; the airports report fewer flights from the U.S.; and the ASADA is discussing a special rate for hotels.'},
+      {w:'mkt',t:'Fewer flights is what keeps me up at night. We need to go after domestic and Mexican tourists.'},
+      {w:'fin',t:'Electricity rationing means a diesel generator: extremely expensive. That I can quantify.'}],
+   opts:[
+    {l:'Combined scenarios — drought, expensive diesel, electricity rationing, fewer flights — with a threshold-based plan',c:'Cost: a week of analysis in the middle of preparations',e:{amb:2,eco:3,mot:1,bie:-2},flag:'escenarios',
+     f:'You did second-order analysis: not one crisis, but the interaction of several. Less rain → more thermal generation → higher rates → more pressure on your diesel. That’s nonlinearity, and now you have thresholds to react before your neighbor does.',k:'Ex ante materiality · scenarios (BANI: Nonlinear)'},
+    {l:'Go after domestic and Mexican tourists with a discount campaign',c:'Cost: margin',e:{tur:1,eco:-3,rep:1},flag:'mercado_nac',
+     f:'You diversified demand; good. But a discount isn’t a resilience strategy: if April brings rationing, the domestic guest also wants a shower and air conditioning.',k:'Market diversification'},
+    {l:'Wait for the official IMN and ICE reports in November before spending on analysis',c:'Cost: nothing today… and a lot in April',e:{eco:2,amb:-3,bie:1},flag:'sin_escenarios',
+     f:'Certainty arrives late by definition. Materiality shifts in a BANI environment; whoever waits for perfect data is managing the past.',k:'Monitoring early signals'},
+    {l:'Sign a fixed-price diesel supply contract for six months',c:'Cost: the price signal that would have forced you to use less',e:{eco:2,due:2,amb:-1,bie:-1},flag:'diesel_fijo',
+     f:'You hedged the price, not the consumption: you locked in the cost of burning diesel just when the question was how to burn less. A reasonable financial hedge and the wrong operational signal: the generator now looks cheap.',k:'Financial hedging vs. operational change'},
+    {l:'Lock in December: a campaign with U.S. agencies and non-refundable deposits',c:'Cost: guests under lock and key',e:{eco:3,tur:-1,rep:-1,mot:-1},flag:'deposito',
+     f:'You secured cash and shifted the risk to the guest: a non-refundable deposit in a rationing season is an expectation under lock and key. You heeded the commercial signal and ignored the operational one.',k:'Shifting risk to the customer'}]}
+ ],
+ qc:['A topic can be financially material without being impact-material, and vice versa. Build two concrete examples for a company of your choice.','The European Union simplified the ESRS but kept double materiality. What does that say about which part of the system regulators consider essential and which part secondary?','Khan, Serafeim and Yoon measure materiality ex post. How does a company assess it ex ante in a BANI context, where topics change weight quickly?','Who gets to decide what is material: the company, investors or communities? How is a disagreement among those groups worked through?']},
+
+/* ---------- STAGE 3 · Session 3 ---------- */
+{n:3, mes:'November', t:'What isn’t measured gets made up',
+ ses:'Measuring to manage', marco:'GRI vs. ISSB, output → outcome → impact, target integrity (SBTi, CDP), ratings divergence (Berg, Kölbel & Rigobon).',
+ ctx:'The auditor for the CST (Certification for Sustainable Tourism) visits in January. Rodrigo wants to put “Carbon Neutral” on the website for the season. Valeria discovers the hotel has no water meters by area and no energy baseline: the ICE bill and the generator’s diesel are paid without knowing who consumes what. And an OTA’s ESG rating gave you two leaves out of five; the owners are outraged.',
+ evs:()=>{const ev=[];
+   if(has('green')){apply({rep:-3});ev.push(['bad','The OTA noticed that “the greenest hotel” hasn’t published a single data point. (−3 Reputation)']);}
+   if(has('matriz')){apply({amb:1});ev.push(['ok','With five prioritized topics, Valeria knows exactly what to measure first. (+1 Environmental)']);}
+   return ev;},
+ dec:[
+  {q:'Rodrigo insists: “Carbon Neutral” on the website before December. What do you decide?',
+   v:[{w:'mkt',t:'Everyone does it. We buy some carbon credits and we’re done.'},
+      {w:'sos',t:'We don’t have a scope 1 and 2 baseline. Promising without measuring is exactly what the Green Claims Code sanctions.'},
+      {w:'due',t:'We would love to be able to say it… if it’s true.'},
+      {w:'fin',t:'Credits cost money, and with diesel like this the generator is going to emit more, not less.'}],
+   opts:[
+    {l:'Install meters by area, build the water, energy and diesel baseline, and communicate only what is measured',c:'Cost: investment and a slower campaign',e:{amb:2,rep:1,eco:-5,mot:1,bie:-2},flag:'linea_base',unflag:'green',
+     f:'You bought the only thing that makes a target manageable: definition, unit, coverage, baseline and owner. Without a metric there is no management; with one, December’s promise will have a denominator.',k:'Manageable metrics · GRI / ISSB (IFRS S1-S2)'},
+    {l:'Offset with certified credits and declare “Carbon Neutral” for the season',c:'Cost: money and a figure with no scope',e:{rep:2,tur:1,due:1,eco:-4,amb:-1},flag:['green','claim_neutral'],
+     f:'You offset what you haven’t measured. It’s technically possible and fragile to communicate: a figure without scope, period or coverage is unintentional greenwashing waiting for a journalist.',k:'Target integrity · SBTi · Green Claims Code'},
+    {l:'Remove every climate mention from the website until the baseline is verified',c:'Cost: no one knowing you’re making progress',e:{rep:-2,amb:1,eco:1},flag:'greenhush',
+     f:'You avoided greenwashing by falling into greenhushing. Silence also destroys learning: guests and the CST auditor don’t know you’re making progress.',k:'Greenhushing'},
+    {l:'Measure only the generator (scope 1) and announce “100% offset energy” for December',c:'Cost: a slogan bigger than the calculation',e:{rep:1,amb:1,eco:-2},flag:'claim_parcial',
+     f:'You measured something and promised more than you measured: scope 2 and water were left out of the calculation and inside the slogan. Better than nothing; worse than saying exactly what it is.',k:'Scopes 1, 2 and 3 · integrity of the claim'},
+    {l:'Enroll in the country’s carbon neutrality program and communicate “in progress”',c:'Cost: a clock that starts ticking',e:{rep:1,due:1,amb:1,eco:-2},flag:'proceso',
+     f:'“In progress” is honest if there is a process: you enrolled in a program that requires an inventory within twelve months. Without your own baseline, the clock is ticking and the promise is already on the website.',k:'Targets with a trajectory · SBTi'}]},
+  {q:'Two leaves out of five on the OTA and the CST in January. The owners want explanations.',
+   v:[{w:'due',t:'Two leaves! What are the sustainability people doing?'},
+      {w:'sos',t:'That rating weighs certifications and written policies, not actual performance. The CST, on the other hand, verifies on site.'},
+      {w:'mkt',t:'It doesn’t matter what it measures: guests filter by leaves.'}],
+   opts:[
+    {l:'Understand what each rating measures, close real documentation gaps and prepare for the CST with field evidence',c:'Cost: weeks of paperwork',e:{rep:2,amb:2,due:3,bie:-2},flag:'cst',
+     f:'You read the ratings divergence for what it is: differences in scope, metrics and weighting. You reacted with evidence, not panic. The CST auditor will find you with files, not speeches.',k:'Ratings divergence · Berg, Kölbel & Rigobon (2022)'},
+    {l:'Hire a consulting firm to “raise the rating” quickly with template policies',c:'Cost: fees and a façade',e:{rep:1,eco:-5,mot:-2,due:1},flag:'plantilla',
+     f:'You raised the score without changing performance: outputs (signed policies) without outcomes (consumption going down). When the auditor asks for field evidence, the template won’t answer.',k:'Output vs. outcome vs. impact'},
+    {l:'Don’t respond to the rating: focus effort on operations and let the CST speak in January',c:'Cost: ceding the narrative to the rating agency',e:{due:-5,rep:-3,bie:1},
+     f:'You may be right on substance, but you’re losing on form: in a market that filters by leaves, ignoring the signal cedes the narrative to the rating agency. The owners didn’t get the lesson; they got that you have no answer.',k:'Managing external signals'},
+    {l:'Reply to the OTA with a formal letter questioning its methodology',c:'Cost: energy, and not a single leaf',e:{due:2,rep:-1,bie:-1},
+     f:'The letter proved your point but won you no leaves. Rating agencies don’t change their weighting because of an email from a forty-room hotel; guests keep filtering by leaves.',k:'Ratings divergence · what can be changed'},
+    {l:'Focus on the CST: ask the auditor for a pre-visit in December to guide the files',c:'Cost: leaving the OTA unanswered for now',e:{amb:2,rep:1,eco:-2,bie:-1},flag:'cst',
+     f:'You went for the rating that verifies on site and left the OTA for later. A pre-visit turns the exam into tutoring; the owners are still wondering about the two leaves, but January’s auditor will no longer be a surprise.',k:'On-site verification vs. document-based rating'}]}
+ ],
+ qc:['What distinguishes an output indicator from an outcome indicator and from an impact indicator? Take an indicator from a report (Bimbo, Schneider) and say what it would take to move it up a level.','Berg, Kölbel and Rigobon show that ESG rating agencies diverge. If a company gets a low score from one agency and a high one from another, which should worry the CFO more, and why?','GRI looks outward (impact); ISSB looks inward (financial risk). Can a mid-sized company afford both? Which would you prioritize in 2026, and with what argument?','What distinguishes a credible “net zero 2050” target from one that is just public relations? Propose three tests.']},
+
+/* ---------- STAGE 4 · Session 4 ---------- */
+{n:4, mes:'December', t:'The pool, the generator and the value proposition',
+ ses:'Redesigning the business model', marco:'The three routes to shared value, Triple Layered Business Model Canvas (Joyce & Paquin), circularity.',
+ ctx:'The season begins. The well has a 50% water deficit; the ASADA rations at night. Generator diesel costs twice what it did a year ago and transfers from Liberia are up 30%. The pool evaporates two tanks a week and the spa uses as much as ten rooms. Your team — millennials and Gen Z trained for excellence — expects clear instructions.',
+ evs:()=>{const ev=[];
+   if(has('silencio')){apply({tur:-4});ev.push(['bad','Several guests found out about the rationing when they reached the front desk. (−4 Guests)']);}
+   if(has('transp')){apply({tur:1,eco:2});ev.push(['ok','Guests came prepared: your pre-arrival plan prevented last-minute cancellations. (+1 Guests, +2 Economic)']);}
+   if(has('escenarios')){apply({amb:1});ev.push(['ok','Your thresholds gave early warning: the spa adjusted before the first complaint. (+1 Environmental)']);}
+   if(has('eufemismo')){apply({tur:-2});ev.push(['bad','Guests were promised “clear skies” and found showers with timers. (−2 Guests)']);}
+   if(has('deposito')){apply({tur:-2,rep:-1});ev.push(['bad','Guests locked in by the non-refundable deposit arrived angry before they even got here. (−2 Guests, −1 Reputation)']);}
+   if(has('flex')){apply({eco:-2});ev.push(['bad','Ten penalty-free cancellations in the first week. (−2 Economic)']);}
+   if(has('todoalto')){apply({mot:-3});ev.push(['bad','Twenty priorities and none at all: the team improvises in the first week. (−3 Team)']);}
+   return ev;},
+ dec:[
+  {q:'Pool, spa and experience with half the water and diesel at twice the price. Do you redesign or restrict?',
+   v:[{w:'mkt',t:'No pool, no photo; no photo, no booking.'},
+      {w:'sos',t:'Let’s redesign: a dry spa, an aquifer tour, dry-season cuisine, bikes instead of transfers. Water is the story.'},
+      {w:'fin',t:'Water trucks cost money, but they keep the rate. Closing the spa means we stop billing.'},
+      {w:'ext',who:'Partner tour operator',t:'If you reinvent the experience, we’ll sell it. But decide now.'}],
+   opts:[
+    {l:'Reconceive the offer: a “dry-season experience” with the tour operators, a dry spa and shared electric mobility',c:'Cost: investment and coordination',e:{tur:3,rep:2,amb:2,com:2,eco:-5},flag:['rediseno','operadores'],
+     f:'Porter and Kramer’s route 1: you reconceived the product. The constraint became a narrative, and expensive diesel became the argument for shared electric transfers. You gained allies who show your guests around.',k:'Route 1 · Reconceiving products and markets'},
+    {l:'Guarantee the full experience: contracted water trucks and a generator for the pool and spa',c:'Cost: money, and peace with the town',e:{tur:2,eco:-8,com:-7,amb:-8},flag:'pipas',
+     f:'You bought time and you bought conflict: the trucks draw from the same aquifer and the generator burns the most expensive diesel of the decade. You treated your symptom by exporting the problem to your neighbor and to your cash.',k:'Externalizing costs · environmental layer of the TLBMC'},
+    {l:'Close the pool and spa for the emergency, with an apology and a 10% discount',c:'Cost: reviews, and margin',e:{amb:2,eco:1,tur:-8,rep:-2},
+     f:'You saved water and took away experience without any design. In tourism, restricting without redesigning is paid for in reviews.',k:'Restriction without a value proposition'},
+    {l:'Pool and spa by reservation, with reduced hours and dynamic pricing; the savings fund water trucks for the pool only',c:'Cost: the pool becomes scarce and expensive',e:{tur:1,eco:2,com:-2,amb:-2},flag:'pipas_light',
+     f:'You rationalized without redesigning: the pool became scarce and expensive, and the truck kept drawing water from the same aquifer, just less of it. You bought time with less conflict; you didn’t buy a story.',k:'Optimizing the model vs. redesigning it'},
+    {l:'Turn the pool into the hotel’s reservoir and sell the season as a “silence and trails retreat,” with no spa',c:'Cost: reaching the market with no channel or photos',e:{amb:3,rep:1,tur:-3,com:1},flag:'retiro',
+     f:'You redesigned boldly and without allies: the proposition is consistent with the water situation, but it reached the market with no operators to sell it. Some pool guests felt cheated; others will remember it as the best trip of the year.',k:'Redesign without an ecosystem · Route 1 halfway'}]},
+  {q:'Productivity in the value chain: the laundry and the kitchen.',
+   v:[{w:'fin',t:'The in-house laundry uses water and boiler diesel. Outsourcing to Liberia is cheaper… today.'},
+      {w:'sos',t:'Go circular: reuse graywater for the gardens, change linens on request, install a solar boiler. It pays for itself in two seasons.'},
+      {w:'rh',t:'If we outsource, seven women from town lose their jobs.'}],
+   opts:[
+    {l:'On-site circularity: graywater for the gardens, linen changes on request, a solar thermal boiler',c:'Cost: capex this quarter',e:{amb:3,eco:-4,com:2,mot:1},flag:'circular',
+     f:'Route 2: productivity in the value chain. Every liter reused is a liter you don’t buy or fight over, and every solar kilowatt is diesel you don’t burn. The investment pays for itself — and faster the more expensive fuel gets.',k:'Route 2 · Value chain productivity · circularity (Ellen MacArthur)'},
+    {l:'Outsource the laundry to an industrial plant in Liberia',c:'Cost: seven local jobs and a daily truck',e:{eco:5,com:-5,mot:-4,amb:-2},flag:'terceriza',
+     f:'You lowered unit cost and shifted the impact: seven local jobs and a daily diesel truck to Liberia. The social layer of the canvas went red just as you’re negotiating water with the town.',k:'Tension between layers · TLBMC (Joyce & Paquin, 2016)'},
+    {l:'Postpone any changes to the laundry and kitchen until May',c:'Cost: the boiler keeps burning diesel at twice the price',e:{eco:-3,amb:-2,bie:2},
+     f:'Legitimate, but the system didn’t wait: the boiler kept burning diesel at twice the price. Not deciding is also a decision.',k:'The cost of inaction'},
+    {l:'Share a laundry with two neighboring hotels: one boiler, shifts and a shared electric truck',c:'Cost: coordination, including yours',e:{eco:1,amb:2,com:1,mot:-1,bie:-2},flag:'circular',
+     f:'Value chain productivity through cooperation: one boiler for three hotels uses less than three, and the shared electric truck turned the competition into a logistics partner. It takes coordination; the liters and kilowatts go down all the same.',k:'Route 2 · cooperation in the value chain'},
+    {l:'Switch to “eco” chemicals, bamboo towels and a card in each room telling guests about it',c:'Cost: pricier supplies for the same system',e:{rep:1,tur:1,eco:-2},flag:'eco_cosmetico',
+     f:'You changed supplies and left the system alone: the boiler still burns diesel and the laundry uses the same water. The card presents a real but small improvement as if it were the strategy.',k:'Cosmetic improvement vs. system change'}]},
+  {q:'How do you lead your team through the season?',
+   v:[{w:'rh',t:'They’re motivated but scared. They want to know what they can decide on their own.'},
+      {w:'fin',t:'Every hour of training in December is an hour not spent serving guests.'},
+      {w:'due',t:'We trust you. But don’t let anything get out of control.'}],
+   opts:[
+    {l:'Train “water and energy guardians”: threshold-based protocols and real autonomy',c:'Cost: training hours in the middle of the season',e:{mot:4,eco:-4,amb:1,tur:1},flag:'guardianes',
+     f:'You distributed leadership: forty pairs of eyes reading water and diesel signals. Resilience can’t be ordered; it’s trained. And it will pay off the day you need to step away.',k:'Built-in capabilities · system resilience'},
+    {l:'Single command for the season: written protocols, and every exception goes through you',c:'Cost: your energy and the team’s initiative',e:{mot:-6,bie:-6,tur:1,due:1},flag:'control',
+     f:'Control gives consistency today and brittleness tomorrow: you became the system’s single point of failure. The owners sleep soundly; you don’t.',k:'Brittleness · single point of failure'},
+    {l:'Cut high-season shifts to the bare minimum to protect the margin',c:'Cost: talent and local jobs right before Christmas',e:{eco:5,mot:-9,com:-4},flag:'recorte_horas',
+     f:'The visible savings created an invisible cost: trained talent starting to look at other hotels, and local families feeling the cut right before Christmas.',k:'The social layer of the business model'},
+    {l:'Hire a seasonal operations manager to absorb the day-to-day',c:'Cost: cash, and a capability that will leave in May',e:{bie:3,eco:-4,mot:-1,tur:1,due:1},
+     f:'You bought time with cash: someone decides for you, but no one else learned to decide. In May they’ll leave with what they know; the capability wasn’t built in.',k:'Bought capability vs. built-in capability'},
+    {l:'A protocol manual for all staff, a daily checklist and a supervisor on every shift',c:'Cost: initiative, and a bottleneck on every shift',e:{tur:1,amb:1,mot:-2,eco:-1,bie:-1},flag:'manual',
+     f:'You standardized without delegating: the manual says what to do when everything is normal, and in the dry season almost nothing is. The supervisor became a bottleneck and the team learned to ask instead of reading signals.',k:'Standardizing vs. distributing judgment'}]}
+ ],
+ qc:['Place Tony’s, Fairphone, Too Good To Go and Worn Wear on Porter and Kramer’s three routes (products and markets, value chain, local cluster). Does any of them use more than one route?','What would happen to Too Good To Go’s model if its suppliers eliminated waste at the source? What does that tell us about business models built on system failures?','The base of the pyramid was criticized for turning poverty into a market. When does a BoP model create shared value, and when does it only extract?','Raworth proposes designing to “thrive without growing.” Is that compatible with the growth mandate a Latin American CEO faces before the board?']},
+
+/* ---------- STAGE 5 · Session 5 ---------- */
+{n:5, mes:'January', t:'How far your visibility reaches',
+ ses:'The supply chain', marco:'Visibility beyond tier 1 (Villena & Gioia), traceability vs. auditing, EUDR, assurance models, shared value with suppliers.',
+ ctx:'Your organic suppliers in Nicoya lost half their harvest to the drought, and fertilizer prices rose along with diesel. The tour operator that brings you 40% of your guests warns it will raise rates 25% or stop running routes. The fuel supplier demands payment in advance. And you discover that your seafood supplier subcontracts informal crews with no insurance.',
+ evs:()=>{const ev=[];
+   if(has('operadores')){apply({tur:1,eco:2});ev.push(['ok','Partner operators kept arrivals steady despite the airfare surcharge. (+1 Guests, +2 Economic)']);}
+   if(has('terceriza')){apply({rep:-4,com:-2});ev.push(['bad','Radio Guanacaste reported on the laundry truck and the seven layoffs. (−4 Reputation, −2 Community)']);}
+   if(has('pipas')){apply({com:-3});ev.push(['bad','The hotel’s water trucks are now a topic at the community assembly. (−3 Community)']);}
+   return ev;},
+ dec:[
+  {q:'Your organic suppliers lost half their harvest and are asking for advance payments.',
+   v:[{w:'fin',t:'Importing from San José is 20% cheaper… as long as diesel doesn’t go up any further.'},
+      {w:'sos',t:'Advance purchases and a dry-season menu built on what does grow. And let’s make the origin traceable: guests pay for the story.'},
+      {w:'ext',who:'Finca La Ceiba · supplier',t:'Without an advance we can’t plant the second harvest. You are 60% of our sales.'},
+      {w:'mkt',t:'“Organic and local” is our tagline on the website. If we import, I’ll delete it.'}],
+   opts:[
+    {l:'Advance purchases, a dry-season menu and a supplier development program (efficient irrigation, traceability)',c:'Cost: restaurant margin and working capital',e:{com:4,rep:2,tur:1,amb:1,eco:-5},flag:'proveedores',
+     f:'You spread the climate risk across the chain and created shared value: the supplier survives and your kitchen tells a story no import can. Traceability as a commercial capability, not a formality.',k:'Shared value with suppliers · Nestlé Cocoa Plan · ICAFE'},
+    {l:'Switch to a San José distributor for the season, with the option of returning in May',c:'Cost: your purpose, just when it defined you most',e:{eco:5,com:-5,rep:-5,amb:-3},flag:'importar',
+     f:'Purpose is proven when it costs. “Organic and local” stopped being true exactly when it was your differentiator, and the truck from San José burns the most expensive diesel of the decade.',k:'Outsourced compliance vs. shared value'},
+    {l:'Require formal organic certification as a condition for continuing to buy',c:'Cost: suppliers who can’t afford it',e:{amb:1,com:-4,eco:-2,rep:1},flag:'exigir_cert',
+     f:'You confused traceability with auditing and loaded the cost of compliance onto the link with the least power. Without remediation or development, the requirement pushes suppliers out instead of improving them.',k:'Distributing compliance costs · Villena & Gioia (2020)'},
+    {l:'A partial advance to La Ceiba in exchange for exclusivity and a fixed price for two years',c:'Cost: shifting climate risk to the weakest link',e:{eco:1,com:1,due:1},flag:'exclusividad',
+     f:'You financed the supplier and tied them down: exclusivity and a fixed price in the middle of a drought shift climate risk to whoever can least absorb it. Today it looks like shared value; if the second harvest fails, it’s a contract La Ceiba won’t be able to honor.',k:'Risk in the chain · who absorbs it'},
+    {l:'Mix it: half local with an advance, half imported, without disclosing the proportion',c:'Cost: the part you don’t tell',e:{eco:2,com:1,rep:-1,amb:-1},flag:'mezcla',
+     f:'A reasonable bridge with one flaw: the part you don’t tell. “Organic and local” stays on the website as a half-truth; half-traceability is the hardest kind to explain when someone asks.',k:'Partial traceability · origin claims'}]},
+  {q:'The tour operator — 40% of your guests — will raise prices 25% because of diesel or cut routes.',
+   v:[{w:'mkt',t:'Without them, January falls apart. Let’s accept and raise our rate.'},
+      {w:'sos',t:'Let’s redesign the logistics together: shared transfers, short routes, local walking tours. Less diesel for both of us.'},
+      {w:'fin',t:'A 25% increase eats up the package margin. Let’s find another operator.'}],
+   opts:[
+    {l:'Co-design with the operator: shared low-fuel logistics and local packages',c:'Cost: weeks of negotiation',e:{eco:3,amb:2,tur:2,com:1,bie:-2},flag:'operadores',
+     f:'You turned a supplier into a partner: less diesel for both, a new product for the guest and a relationship that will withstand the next price hike. That’s the supply chain as a frontier of value, not just of risk.',k:'The supply chain as a frontier of value'},
+    {l:'Accept the 25% and adjust the package rate with a visible “fuel” surcharge',c:'Cost: bookings',e:{eco:-3,tur:-5,rep:-1},
+     f:'You shifted the cost onto the link that can walk away: the guest. In a fuel crisis, whoever doesn’t redesign logistics just passes along the bills.',k:'Passing costs along the chain'},
+    {l:'Switch to a cheaper operator from another province',c:'Cost: an ally who knows the town',e:{eco:3,com:-4,tur:-2,rep:-2},
+     f:'You saved margin by losing a local ally who knows your guests and the town. Your supply chain visibility just slipped back a tier.',k:'Tier 1 visibility'},
+    {l:'Open a direct channel: invest in digital marketing to depend less on the operator',c:'Cost: cash now, results in two seasons',e:{eco:-3,tur:1,rep:1,due:1,mot:-1},flag:'directo',
+     f:'You diversified channels — good — and did it in January, when the operator was already bringing you 40%. A direct channel takes two seasons to mature; meanwhile you paid for the marketing and the operator’s 25%.',k:'Channel diversification · time horizon'},
+    {l:'Accept the 25% in exchange for regional exclusivity for the operator and a guaranteed minimum of rooms',c:'Cost: flexibility if the operator cuts routes',e:{eco:1,tur:1,com:-1,due:1},flag:'exclusiva_op',
+     f:'You closed a good deal for today: rate and volume. And you gave up flexibility: if the operator cuts routes in April, your 40% goes with it and the guaranteed minimum protects no one.',k:'Channel dependence · concentration risk'}]},
+  {q:'You discover informal, uninsured crews at your seafood supplier (tier 2).',
+   v:[{w:'rh',t:'If a worker gets hurt, the story comes out with our name on it.'},
+      {w:'fin',t:'They’re not our employees. Let’s ask for a compliance letter and be done with it.'},
+      {w:'sos',t:'Let’s map as far as the risk justifies, not as far as is comfortable. And give them time and support to regularize.'}],
+   opts:[
+    {l:'Due diligence with remediation: a deadline, support to insure the crew, and follow-up',c:'Cost: time and some money',e:{com:2,rep:1,amb:1,eco:-3},flag:'diligencia',
+     f:'You mapped as far as the material risk justifies and included remediation, not just exclusion. Traceability became a capability, and the labor risk stopped being a headline waiting to happen.',k:'Due diligence beyond tier 1 · the EUDR logic'},
+    {l:'Ask the supplier for a sworn statement of labor compliance and keep buying',c:'Cost: a risk that’s still there',e:{eco:1,rep:-2},flag:'carta',
+     f:'A piece of paper isn’t evidence. Knowing where the product comes from doesn’t prove it meets a standard; and the CST auditor, the press or an accident will find out before you do.',k:'Traceability ≠ auditing'},
+    {l:'Suspend purchases from the supplier until it proves its whole chain is insured',c:'Cost: a local family’s income',e:{amb:1,com:-3,tur:-2,eco:-2},
+     f:'You excluded the risk and also a local family’s income, with no chance to improve. The standard went up; the community felt it as punishment.',k:'Exclusion vs. supplier development'},
+    {l:'Require the supplier to insure the crew within thirty days, without support, or lose the contract',c:'Cost: the standard without the ladder',e:{rep:1,com:-2},flag:'ultimatum',
+     f:'You set the standard but not the ladder. The supplier will insure three and fire five, and the labor risk moved from your chain into the town. You’re compliant; the problem wasn’t solved.',k:'Compliance without remediation'},
+    {l:'Report the case to the social security fund (CCSS) and the Ministry of Labor and let the authorities act',c:'Cost: the relationship, in a town where everyone knows who called',e:{rep:-1,com:-3,due:1,bie:1},
+     f:'You complied with the law and delegated the relationship: in a small town, the inspection arrived with your name on everyone’s lips. Modern due diligence expects accompanied remediation, not a report without follow-through.',k:'Due diligence · remediation vs. reporting'}]}
+ ],
+ qc:['Villena and Gioia document that second-tier suppliers are rarely audited. Where does real visibility end in a typical supply chain in the region, and why is it lost right there?','Nestlé Cocoa Plan builds its own program; Enveritas outsources verification without audits. Which scales better in Latin America, and why?','When does a supplier program create shared value, and when does it just transfer the cost of compliance to the weakest link? Propose a criterion.','The EUDR requires geolocation of plots. How does a company that buys from hundreds of smallholders without property titles comply, and who pays that cost?']},
+
+/* ---------- STAGE 6 · Session 6 ---------- */
+{n:6, mes:'February', t:'Sustainability in the CFO’s language',
+ ses:'The financial case', marco:'Five value levers (Henisz, Koller & Nuttall), NYU Stern’s ROSI, sustainable finance (ICMA), correlation vs. causation, option value.',
+ ctx:'ICE confirms electricity rationing in April. Esteban brings the spreadsheet: the diesel generator will cost US$18,000 a month; a solar system with batteries costs US$240,000 and takes four months to install. IDB Invest offers a green loan at a preferential rate, tied to a diesel-reduction KPI. The owners can contribute capital, but they already did so last year. The accountant warns that the low-season payroll isn’t covered.',
+ evs:()=>{const ev=[];
+   if(has('linea_base')){apply({eco:3,due:1});ev.push(['ok','Your baseline made it possible to quantify the financial case in one afternoon; the bank asked for nothing more. (+3 Economic, +1 Owners)']);}
+   else {apply({eco:-3});ev.push(['bad','Without a baseline, Esteban eyeballed consumption and the bank asked for three more weeks of analysis. (−3 Economic)']);}
+   if(has('circular')){apply({eco:3,amb:1});ev.push(['ok','The solar boiler and the graywater system are already saving measurable diesel and liters. (+3 Economic, +1 Environmental)']);}
+   if(has('pipas')){apply({eco:-5});ev.push(['bad','The water trucks and the generator drained January’s cash. (−5 Economic)']);}
+   if(has('diesel_fijo')){apply({eco:2,amb:-1});ev.push(['ok','The fixed-price contract saved money in January… and weakened the solar case: the generator now looks cheap. (+2 Economic, −1 Environmental)']);}
+   if(has('proveedores')){apply({eco:2});ev.push(['ok','The dry-season menu lowered import costs. (+2 Economic)']);}
+   return ev;},
+ dec:[
+  {q:'A diesel generator, or solar with batteries and a green loan. What is your financial case?',
+   v:[{w:'fin',t:'Solar is nice, but our cash can’t withstand four months of construction and debt. The generator works right now.'},
+      {w:'sos',t:'Solar pays for itself in five years at current diesel prices; in three if prices keep rising. And the loan KPI forces us to measure.'},
+      {w:'due',t:'We’ve wanted panels for years. We’ll put in capital if necessary, but don’t ask us again.'},
+      {w:'ext',who:'IDB Invest',t:'Preferential rate if you cut diesel 40% in 24 months; a penalty if you don’t.'}],
+   opts:[
+    {l:'A ROSI model with a baseline and sensitivity analysis: solar with a green loan and a credible KPI; the generator only as backup',c:'Cost: debt and four months of construction',e:{amb:3,eco:-5,rep:1,due:2,bie:-2},flag:'solar',
+     mod:()=>has('linea_base')?{eco:4}:{eco:-2},
+     f:'You built the causal chain — practice → operational change → driver → financial metric — and declared the uncertainty. You accepted a material, measurable KPI with a meaningful but not unworkable penalty. The asset lever turns diesel into natural capital.',
+     fmod:()=>has('linea_base')?' Your baseline got the bank to approve in two weeks (+4 Economic).':' Without a baseline, the bank charged for the uncertainty in both rate and time (−2 Economic).',
+     k:'Five levers · ROSI · ICMA principles'},
+    {l:'Your own diesel generator for April; the solar investment gets evaluated once the season is over',c:'Cost: the most expensive fuel of the decade, every month',e:{eco:3,amb:-7,rep:-2,due:-3},flag:'diesel',
+     f:'You solved April with the asset that becomes stranded fastest: a generator burning the most expensive diesel of the decade. Without a long-term financial case, every month of rationing reopens the same discussion.',k:'Stranded assets · time horizon'},
+    {l:'Solar with the owners’ capital: no debt, no external KPI, construction starts immediately',c:'Cost: the family’s patience',e:{amb:2,due:-8,eco:-2},flag:'solar_due',
+     f:'You financed well and governed badly: the owners put in capital for the second time, with no KPI to discipline execution. Sustainability that lives only on the owners’ faith runs out when the faith does.',k:'Governance of financing'},
+    {l:'Rent a more efficient generator for a year and postpone the solar decision until next season',c:'Cost: the preferential rate, which won’t wait',e:{eco:1,amb:-3,due:-1,bie:1},flag:'alquiler',
+     f:'You reduced the damage and postponed the decision: the rented generator burns less than yours and still burns the most expensive fuel of the decade. By May, the green loan won’t be available at this rate.',k:'Option value · the cost of waiting'},
+    {l:'Energy as a service: a third party installs the panels and sells you the power; no capex, a fifteen-year contract',c:'Cost: margin and fifteen years under contract',e:{amb:2,eco:1,due:1,rep:1,bie:-1},flag:'ppa',
+     f:'You bought kilowatt-hours instead of panels: no capex or debt, with the technical risk on the provider and a contract that stays with you for fifteen years. Less return than owning the panels; much more speed.',k:'Financing structures · PPA'}]},
+  {q:'The accountant is clear: between investments, advances and diesel, there isn’t enough for the low-season payroll. The owners suggest laying off 20% of the staff.',
+   v:[{w:'due',t:'It hurts us, but the family can’t keep putting in money. Let’s cut now.'},
+      {w:'rh',t:'These are people from town, trained over years. If we let them go, the hotel next door hires them on Monday.'},
+      {w:'fin',t:'It’s the fastest lever. The fastest, not the cheapest.'},
+      {w:'fam',t:'If you have to let someone go, don’t let it be on a Sunday, and don’t carry it alone.'}],
+   opts:[
+    {l:'Restructure: cut payroll 20%, with full severance and a letter of recommendation',c:'Cost: capabilities, trust and social license',e:{eco:7,mot:-10,com:-6,rep:-3,bie:-2},flag:'despidos',
+     f:'The cash breathes and the system bleeds: you let go of capabilities you spent years training, and families from the same town you’re negotiating water with. The “productivity and talent” lever works in reverse.',k:'Talent lever · invisible cost'},
+    {l:'A shared reduction: fewer hours for everyone, starting with your salary, with the books open to the team',c:'Cost: everyone’s income, starting with yours',e:{eco:4,mot:1,rep:1,due:1,bie:-2},flag:'compartida',
+     f:'You shared the pain transparently and put yourself at the front of the line. The team loses income, not trust; and distrust always costs more than hours.',k:'Productivity and talent · internal transparency'},
+    {l:'Don’t touch the payroll: create low-season revenue with the team (retreats, local tourism, water volunteering)',c:'Cost: cash, if the team doesn’t respond',e:{eco:-4,mot:3,com:2,tur:1},
+     mod:()=>has('guardianes')?{eco:4}:null,
+     f:'You bet that talent is the asset, not the cost. If the team responds, the low season gets reinvented; if not, the cash will pay for it.',
+     fmod:()=>has('guardianes')?' And it did respond: your guardians filled the calendar with ideas of their own (+4 Economic).':'',
+     k:'Revenue growth · talent as an asset'},
+    {l:'Early vacations and “voluntary” unpaid leave for the low season, with a guaranteed return',c:'Cost: those least able to say no',e:{eco:3,mot:-2,com:-1,due:1,bie:-1},flag:'permisos',
+     f:'You lowered payroll without layoffs, and shifted the cost to those least able to ask for unpaid leave. “Voluntary,” in a town with one main employer, is a generous word. The team accepted it; they didn’t choose it.',k:'Labor flexibility · bargaining power'},
+    {l:'Ask the family for a bridge loan to cover three months of payroll',c:'Cost: the owners’ patience, again',e:{eco:3,mot:1,due:-4,bie:-1},flag:'puente',
+     f:'You protected the people with the patience of the family, who already put in capital last year. Payroll got paid; May’s conversation about governance will be tough.',k:'Family financing · governance'}]},
+  {q:'Esteban proposes a “value created” dashboard for the owners. What does the report count?',
+   v:[{w:'fin',t:'Only what I can defend: diesel and water savings. The rest is faith.'},
+      {w:'mkt',t:'Let’s say sustainability got us 15% more bookings!'},
+      {w:'sos',t:'Let’s separate what’s observed from what’s assumed: measured savings, estimated avoided risk and explicit strategic options.'}],
+   opts:[
+    {l:'Three columns: measured value, estimated avoided risk and option value, with visible assumptions',c:'Cost: admitting uncertainty to the family',e:{due:4,rep:1,eco:2,mot:1},flag:'caso_honesto',
+     f:'You distinguished correlation from causation: you didn’t promise automatic returns, but you showed which part of the value is backed by data and which part is an option. The owners finally understood what they are buying.',k:'Correlation vs. causation · option value'},
+    {l:'Present the growth in bookings as the return on the sustainability strategy',c:'Cost: credibility at the first bad quarter',e:{due:2,rep:1},flag:'atribucion',
+     f:'You sold a correlation as a cause. It works until a bad quarter disproves the story; then sustainability takes blame it didn’t deserve.',k:'ESG–performance evidence · Friede, Busch & Bassen (2015)'},
+    {l:'Accounting savings only; nothing that isn’t on the invoice',c:'Cost: undervaluing your own strategy',e:{due:1,amb:-1,mot:-2},
+     f:'Rigorous and shortsighted: you left out avoided risk and future access to customers and capital. Complying today preserves options tomorrow; not counting them undervalues your own strategy.',k:'Five levers · beyond savings'},
+    {l:'A benchmark dashboard: your KPIs against three certified hotels in the region',c:'Cost: context without causation',e:{due:2,rep:1,bie:-1},flag:'benchmark',
+     f:'Useful context and no causation: the benchmark says where you stand, not what produced the difference. The owners saw a ranking; they still don’t know what they bought.',k:'Benchmark vs. causal chain'},
+    {l:'Give the dashboard to Rodrigo and Esteban together: one version for the board and another for the website',c:'Cost: two truths about the same value',e:{due:1,rep:1,mot:-1},flag:'dos_versiones',
+     f:'Two versions of the same value is already a governance problem: the one that’s published and the one that’s believed. When someone compares them, the word will be greenwashing even if both are true.',k:'Internal–external consistency of reporting'}]}
+ ],
+ qc:['Of McKinsey’s five levers (growth, costs, regulation, talent, investments), which is defensible with data in most companies and which is almost always a bet?','Friede, Busch and Bassen find a positive correlation between ESG and financial performance, but not causation. How does a CFO present that evidence without overselling it?','Ørsted was the success story of the decade, and in 2025 it had to recapitalize. What failed: the sustainability strategy, the management of regulatory risk, or the assumption of low interest rates?','A sustainability-linked bond penalizes the company if it misses its KPI. Which KPI would you choose, and what penalty would be credible without being suicidal?']},
+
+/* ---------- STAGE 7 · Session 7 ---------- */
+{n:7, mes:'March', t:'The purpose gap',
+ ses:'Leading change', marco:'The purpose gap (Gartenberg, Prat & Serafeim), incentives and gaming, working through resistance, accountability (Bebchuk & Tallarita).',
+ ctx:'Marcela’s internal survey: top management says the purpose is “regenerative tourism”; middle managers believe what really gets rewarded is occupancy and cost savings. The head of maintenance resists the water protocols: “with the restrictions, the AC doesn’t cool and guests complain.” The owners propose a “sustainability” bonus. And this Friday is your daughter Sofía’s quinceañera.',
+ evs:()=>{const ev=[];
+   if(has('control')){apply({mot:-4});ev.push(['bad','Everything goes through you, and it shows: the survey says no one decides without permission. (−4 Team)']);}
+   if(has('guardianes')){apply({mot:1});ev.push(['ok','The water guardians show up in the survey as the best thing about the year. (+1 Team)']);}
+   if(has('despidos')){apply({mot:-4,com:-3});ev.push(['bad','February’s layoffs are still the talk of the town and the staff cafeteria. (−4 Team, −3 Community)']);}
+   if(has('recorte_horas')){apply({mot:-3});ev.push(['bad','December’s cut in hours hasn’t been forgotten: two more people resigned. (−3 Team)']);}
+   if(has('directo')){apply({eco:2});ev.push(['ok','The direct channel started bringing in its own bookings. (+2 Economic)']);}
+   if(has('operadores')){apply({eco:4});ev.push(['ok','Partner operators filled March at firm rates: the direct channel offset the airfare surcharge. (+4 Economic)']);}
+   if(has('cst')){apply({eco:3,tur:1});ev.push(['ok','The current CST seal opened the door to a European corporate account that requires verified certification. (+3 Economic, +1 Guests)']);}
+   if(has('guardianes')){apply({bie:2});ev.push(['ok','Delegating to the guardians gave you back two afternoons a week. (+2 Wellbeing)']);}
+   if(has('apoyo')||has('familia')||has('ritmo')){apply({bie:3});ev.push(['ok','The rhythm you negotiated gave you room to think in March. (+3 Wellbeing)']);}
+   return ev;},
+ dec:[
+  {q:'The owners’ “sustainability” bonus. How do you design it?',
+   v:[{w:'due',t:'A bonus for everyone if we cut water use by 30%. Simple.'},
+      {w:'fin',t:'Simple and dangerous: they’ll shut off showers to win the bonus and reviews will drop.'},
+      {w:'rh',t:'Middle managers need to know what is really rewarded. Today they think it’s only occupancy.'},
+      {w:'sos',t:'Material metrics, with a quality threshold and a time horizon. No one should win by cutting water at the guest’s expense.'}],
+   opts:[
+    {l:'A combined incentive: water and diesel by area, guest satisfaction and safety; thresholds and a two-season horizon',c:'Cost: a slower design than the simple bonus',e:{mot:2,amb:2,tur:1,due:1,bie:-2},flag:'incentivos',
+     f:'You designed carefully: material metrics, a balanced mix and a time horizon. You closed the purpose gap where it actually closes: through what really gets rewarded in middle management.',k:'Incentives and gaming · Gartenberg, Prat & Serafeim (2019)'},
+    {l:'A simple bonus for cutting water use by 30%',c:'Cost: whatever the team does to win it',e:{amb:2,tur:-6,mot:1,rep:-3},flag:'gaming',
+     f:'You accelerated one behavior and created gaming: showers were shut off, AC units switched off, reviews fell. Rewarding an isolated improvement at the expense of another front is the fastest way to discredit sustainability in the eyes of the team.',k:'Incentive gaming'},
+    {l:'No bonus: invest that money in communicating the purpose and publicly recognizing those who live it',c:'Cost: the narrative coexisting with a different operation',e:{mot:-3,due:-2},flag:'sin_incentivos',
+     f:'Purpose doesn’t produce results just by being inspiring. Without decisions, incentives or consequences, the narrative coexists with an operation that keeps maximizing short-term occupancy.',k:'Purpose needs accountability · Bebchuk & Tallarita'},
+    {l:'An individual water-savings bonus for each area head, measured with the meters',c:'Cost: each area optimizing its own meter rather than the hotel',e:{amb:2,mot:-1,tur:-2},flag:'bono_jefes',
+     f:'Measuring well and rewarding badly: the heads optimized their own meters, not the hotel. The kitchen lowered its water use by sending linens to the laundry; the laundry’s use went up. Gaming with data is just more precise gaming.',k:'Silo incentives · gaming'},
+    {l:'Postpone the bonus a year: first measure for two seasons and set the baseline',c:'Cost: another year of gap between what’s said and what’s rewarded',e:{amb:1,due:-1,mot:-1,eco:1},
+     f:'Prudent and slow: while you measure, middle management keeps believing that occupancy is what gets rewarded. The purpose gap doesn’t wait for the baseline; it closes or widens every month.',k:'The purpose gap · the cost of time'}]},
+  {q:'The head of maintenance pushes back: “the water protocols keep the AC from cooling.”',
+   v:[{w:'rh',t:'It’s not sabotage. He faces a real trade-off between comfort, consumption and complaints.'},
+      {w:'sos',t:'Let’s run an experiment in one wing: measure temperature, water and complaints for two weeks.'},
+      {w:'fin',t:'If he’s right, we change; if not, he complies. But decide quickly.'}],
+   opts:[
+    {l:'Treat the objection as technical: an experiment in one wing, with data and an explicit decision on the trade-off',c:'Cost: two weeks and some of your time',e:{mot:2,amb:1,tur:1,bie:-2},flag:'experimento',
+     f:'You distinguished a technical objection from a defense of the status quo, translated the target into operating economics and decided the trade-off in full view. The head of maintenance became co-author of the protocol.',k:'Working through resistance'},
+    {l:'Keep the protocol as is: it’s a green loan commitment and isn’t negotiable by area',c:'Cost: information that will no longer reach you',e:{amb:1,mot:-6,tur:-3},
+     f:'You gained obedience and lost information: the objection was real, and now it will be resolved on the sly, switching protocols off when you’re not looking.',k:'Resistance handled badly'},
+    {l:'Suspend the protocol so as not to lose the head of maintenance',c:'Cost: consistency and the loan KPI',e:{mot:1,amb:-5,due:-3},
+     f:'You bought peace at the cost of consistency: the team learned that the target gets negotiated with whoever protests loudest. And the green loan KPI just slipped backward.',k:'Consequences and accountability'},
+    {l:'Raise the AC set point two degrees throughout the hotel and notify guests with a card',c:'Cost: deciding by decree what was a local trade-off',e:{amb:2,tur:-3,mot:1},
+     f:'You resolved the trade-off by decree, for everyone and without data: in the north wing the AC units didn’t need it; in the south wing, two degrees was too much. The head of maintenance was half right, and nobody checked.',k:'Uniform decision vs. experiment'},
+    {l:'Hire an outside engineer to audit the AC and decide based on the report',c:'Cost: fees, and cutting out the person who knows the building best',e:{amb:1,eco:-3,mot:-1},flag:'auditoria_ext',
+     f:'You bought a technical opinion and cut the person who knows the building best out of the process. The report arrived correct and late; the head of maintenance didn’t feel like co-author of anything.',k:'Resistance as information'}]},
+  {q:'Sofía’s quinceañera is this Friday, at full occupancy.',
+   v:[{w:'fam',t:'Sofía isn’t asking for a present; she’s asking for you to be there.'},
+      {w:'due',t:'The Texas agency group arrives this Friday. Will you be there?'}],
+   opts:[
+    {l:'Delegate the weekend to the team and be present at home',c:'Cost: letting go of control for 72 hours',e:{bie:9},
+     mod:()=>has('guardianes')?{mot:2}:{tur:-5,mot:-3},
+     fdyn:()=>has('guardianes')?'The hotel didn’t miss you: you had trained it for exactly this. Delegating with built-in capabilities is also leadership (+2 Team).':'You left without having built autonomy: the team improvised and it showed (−5 Guests, −3 Team). Delegating without developing is abdicating.',
+     k:'Personal sustainability · built-in capabilities'},
+    {l:'Stay: a present and a video call',c:'Cost: what can’t be recovered',e:{bie:-7,tur:1,due:1},
+     f:'The hotel gained a weekend; your home lost something harder to replace. Burnout gives no warning: it accumulates.',k:'Personal sustainability'},
+    {l:'Celebrate at the hotel, between calls',c:'Cost: being half-present for everything',e:{bie:-2,tur:1},
+     f:'Half-present for everything, fully present for nothing. Sometimes it works; as a habit, it’s the formula for burnout.',k:'Personal sustainability'},
+    {l:'Go to the party and head back to the hotel at midnight to welcome the Texas group',c:'Cost: being in two places with your head in one',e:{bie:3,tur:1,mot:-1},
+     f:'You were at the party with the hotel on your mind, and at the hotel with the party in your heart. Sofía noticed less than you did; the team noticed that you don’t trust them.',k:'Personal sustainability · presence'},
+    {l:'Ask Marcela to cover the weekend, with an extra bonus',c:'Cost: Marcela’s weekend',e:{bie:4,eco:-2,mot:1,due:-1},
+     f:'You delegated to one person and paid for it: it worked, and Marcela didn’t see her family. Delegating to the system would have been free; delegating to a person has a cost, and it builds up in another account.',k:'Delegating to people vs. to the system'}]}
+ ],
+ qc:['Gartenberg, Prat and Serafeim show that purpose matters when middle management believes in it, not top management. How do you measure that gap in an organization, and what do you do with the result?','Danone was the first “purpose-driven company” (entreprise à mission) in the CAC 40, and its CEO was out a year later. Was it a failure of purpose or of execution? What should the board have done differently?','If tying 20% of a CEO’s bonus to an ESG metric changes their behavior, which metric would you choose, and what unwanted behavior could it induce?','An operations manager resists an emissions target because it raises unit costs. Is that legitimate resistance? How does a CEO work through it without overruling or giving in?']},
+
+/* ---------- STAGE 8 · Session 8 ---------- */
+{n:8, mes:'April', t:'The first 72 hours',
+ ses:'Stakeholders and reputational crisis', marco:'Stakeholder salience (Mitchell, Agle & Wood), greenwashing and greenhushing, radical transparency, the first-72-hours protocol.',
+ ctx:'Peak drought. The ASADA announces a three-day water cutoff for businesses, and ICE imposes electricity rationing of four hours a day. A voice note is circulating in town: “the hotels take the water and run generators while we don’t even have enough to bathe.” A guest with 800,000 followers posts: “I paid for paradise and they’re rationing my shower.” Radio Guanacaste requests an interview. Neighbors call for a protest in front of the hotel on Saturday.',
+ evs:()=>{const ev=[];
+   if(has('pipas')){apply({com:-4});ev.push(['bad','The voice note mentions your water trucks by name. (−4 Community)']);}
+   if(has('green')||has('claim_neutral')){apply({rep:-5});ev.push(['bad','The guest found the “carbon neutral” claim on the website and posted it in a photo next to the generator. (−5 Reputation)']);}
+   if(has('transp')){apply({tur:1});ev.push(['ok','Most guests already knew about the rationing: the viral post got little traction inside the hotel. (+1 Guests)']);}
+   if(has('matriz')){apply({com:2});ev.push(['ok','The ASADA called you before announcing the cutoff: they remembered the October workshop. (+2 Community)']);}
+   if(has('solar')||has('ppa')){apply({amb:1,rep:1});ev.push(['ok','The panels arrived just in time: the generator barely runs during rationing. (+1 Environmental, +1 Reputation)']);}
+   if(has('exclusividad')){apply({com:-2});ev.push(['bad','La Ceiba couldn’t hold the fixed price, and the town found out who wrote the clause. (−2 Community)']);}
+   if(has('claim_parcial')){apply({rep:-2});ev.push(['bad','A guest asked on social media what “offset energy” means, and no one could answer. (−2 Reputation)']);}
+   if(has('bono_jefes')){apply({tur:-2});ev.push(['bad','Areas pass consumption back and forth; guests notice the changes in towels and AC. (−2 Guests)']);}
+   if(has('diesel')){apply({com:-3,amb:-3});ev.push(['bad','The generator roars at night and the town hears it. (−3 Community, −3 Environmental)']);}
+   if(has('circular')){apply({eco:4});ev.push(['ok','Graywater and the solar boiler made rationing a minor cost: your water-truck and diesel bill was half that of the hotel next door. (+4 Economic)']);}
+   if(has('proveedores')){apply({eco:3,com:1});ev.push(['ok','Local suppliers kept deliveries coming with no freight surcharge and spoke up for you in town. (+3 Economic, +1 Community)']);}
+   if(has('ritmo')){apply({bie:2});ev.push(['ok','Your protected hour survived crisis week. (+2 Wellbeing)']);}
+   if(has('gaming')){apply({tur:-3});ev.push(['bad','The showers shut off “for the bonus” show up in three reviews this week. (−3 Guests)']);}
+   return ev;},
+ dec:[
+  {q:'Whom do you attend to first? Power, legitimacy and urgency.',
+   v:[{w:'mkt',t:'The influencer. Eight hundred thousand followers. Everything else is local.'},
+      {w:'sos',t:'The ASADA and the neighbors have legitimacy and have just gained urgency. The influencer has power; but without the community there’s no hotel.'},
+      {w:'fin',t:'The bank behind the green loan heard the voice note. They’re asking whether there’s a social license risk.'},
+      {w:'rh',t:'The team lives in that town. They hear the voice note at home.'}],
+   opts:[
+    {l:'A salience map: people and community first (ASADA, neighbors, team); then the guest and the press; with one spokesperson and confirmed facts',c:'Cost: 72 hours without sleep',e:{com:3,mot:2,rep:1,bie:-3},flag:'protocolo72',
+     f:'Protect people and contain the damage before optimizing the narrative. You prioritized by power, legitimacy and urgency, and named a spokesperson with access to real information. The first decision in a crisis is the hardest to reverse; you made it well.',k:'Salience · Mitchell, Agle & Wood (1997) · the first 72 hours'},
+    {l:'The guest first: an upgrade, dinner and a refund today; the community on Monday',c:'Cost: telling the town where it stands in line',e:{tur:2,com:-6,rep:-2,mot:-3},flag:'fila',
+     f:'You bought silence, not conviction, and told the town where it stands in line. A stakeholder with legitimacy that gains urgency acquires power very fast; you’ll see it on Saturday.',k:'Dynamic salience'},
+    {l:'An immediate statement — “the hotel operates within its authorized concession” — to stop the rumor',c:'Cost: tomorrow’s evidence',e:{rep:-7,com:-4,due:-3},flag:'negacion',
+     f:'Premature denial, minimization, no data: exactly what the 72-hour protocol forbids. When the well figures come out, today’s statement will be tomorrow’s evidence.',k:'Irreversible mistakes in a crisis · Volkswagen, Vale'},
+    {l:'Attend to the bank first: an urgent meeting to make sure the loan doesn’t fall through',c:'Cost: neglecting what backs the loan',e:{eco:2,due:2,com:-3,rep:-2,mot:-1},flag:'banco_primero',
+     f:'You protected the financing and neglected what backs it: the bank was asking about social license, and your answer was a meeting without the ASADA. On Saturday they saw the result at the protest.',k:'Salience · power without legitimacy'},
+    {l:'Call everyone — the ASADA, neighbors, the guest, the radio — to an open meeting on Friday',c:'Cost: an open mic without confirmed facts',e:{com:1,tur:-1,bie:-3},flag:'asamblea',
+     f:'Democratic and premature: with no confirmed facts or spokesperson, the assembly was an open mic. Listening to everyone at once isn’t prioritizing; and in the first 72 hours, prioritizing is what’s expected of you.',k:'The first 72 hours · sequence'}]},
+  {q:'The water belongs to everyone. The ASADA and the neighbors expect a proposal before Saturday.',
+   v:[{w:'ext',who:'Doña Rosa · ASADA',t:'If the hotel rations along with us and helps with the tanks, I’ll call off the protest myself.'},
+      {w:'fin',t:'Co-financing tanks and rainwater harvesting is money we don’t have in April.'},
+      {w:'due',t:'Let’s do it. This is why we founded the hotel.'},
+      {w:'mkt',t:'Deal or no deal, I need a photo with the community on Saturday.'}],
+   opts:[
+    {l:'A tiered-use agreement with the ASADA, co-financing tanks and rainwater harvesting, and open well data',c:'Cost: a heavy investment in the worst month',e:{com:7,rep:3,amb:2,due:1,eco:-7},flag:'asada',
+     mod:()=>has('matriz')?{com:2}:null,
+     f:'You went from competing for the resource to co-managing it. You broke the tragedy of the commons with the only tool that works: shared rules and data everyone can see. Doña Rosa called off the protest.',
+     fmod:()=>has('matriz')?' The October validation with the ASADA got the agreement signed in a single day (+2 Community).':'',
+     k:'Social license · shared rules'},
+    {l:'Stand by the concession: the hotel uses the well within what is authorized, and will say so to MINAE',c:'Cost: the social license',e:{com:-10,rep:-6,eco:-4,due:-4},flag:'litigio',
+     f:'Legally impeccable, systemically explosive: you won the argument and lost the neighbor. Social license can’t be litigated; on Saturday there were signs and cameras.',k:'License to operate'},
+    {l:'Open the hotel’s tank to the neighbors for three days and invite the local press',c:'Cost: little, and it builds no structure',e:{com:2,rep:1,eco:-3},flag:'foto',
+     mod:()=>has('green')?{rep:-4}:null,
+     f:'One-off generosity brings relief but builds no structure, and a photo without an agreement smells of PR. Without rules, goodwill evaporates faster than water.',
+     fmod:()=>has('green')?' And given the “green” history on the website, the photo was read as greenwashing (−4 Reputation).':'',
+     k:'Gesture vs. structure'},
+    {l:'Cut the hotel’s consumption 30% immediately — pool closed, towels on request — and announce it without negotiating anything',c:'Cost: doing the right thing alone',e:{amb:2,com:2,tur:-3,rep:1},flag:'unilateral',
+     f:'You did the right thing alone: the gesture is real and the town saw it, but no one signed any rules. When the pool reopens in May, the conflict will return to the same empty table.',k:'Unilateral action vs. shared rules'},
+    {l:'Propose to the ASADA a contract to buy water in bulk at a special rate',c:'Cost: turning a commons into a contract',e:{com:-3,due:1,rep:-2,amb:-1},flag:'tarifa',
+     f:'You turned a commons into a supply contract: legal, orderly, and read as “the hotel is buying the town’s water.” Doña Rosa didn’t sign, and Saturday’s voice note had a sequel.',k:'The commons · Ostrom'}]},
+  {q:'Radio Guanacaste and the influencer guest. How do you communicate?',
+   v:[{w:'mkt',t:'A polished statement and an Instagram story with the panels.'},
+      {w:'sos',t:'An interview with the well and diesel data, including what we haven’t achieved. Progress, not perfection.'},
+      {w:'fin',t:'Careful what you promise: the bank reads everything.'},
+      {w:'rh',t:'The spokesperson should be someone who knows what’s happening on the floor.'}],
+   opts:[
+    {l:'Radical transparency: an interview with open data, limits and a plan; and you personally host the guest for a real aquifer experience',c:'Cost: exposing yourself to scrutiny, and your energy',e:{rep:4,com:3,tur:2,bie:-4},flag:'datos',unflag:'green',
+     mod:()=>has('linea_base')?{rep:1}:{rep:-3},
+     fdyn:()=>'You made visible what a reasonable stakeholder needs to assess progress and how mistakes are corrected. You turned the critic into the narrator: no one tells the water story better than someone who came for the pool.'+(has('linea_base')?' You had a baseline: every figure had a denominator, period and coverage, and the rumor became a conversation (+1 Reputation).':' But without a baseline, some figures were guesstimates and a neighbor challenged them on air (−3 Reputation). Transparency needs data, not just courage.'),
+     k:'Radical transparency · Patagonia, Oatly, Tony’s Chocolonely'},
+    {l:'A polished corporate statement and a story featuring the panels',c:'Cost: closeness',e:{rep:1,com:-3,tur:1},
+     mod:()=>(has('green')||has('claim_neutral'))?{rep:-5}:null,
+     fdyn:()=>(has('green')||has('claim_neutral'))?'The story with the panels next to the generator, plus the “carbon neutral” claim on the website, was the meme of the weekend (−5 Reputation). Greenwashing charges interest.':'You went through the motions without touching the emotion. In small communities, trust is built face to face; on social media, with data.',
+     k:'Greenwashing · UK Green Claims Code · the H&M case'},
+    {l:'Hold off on any statement until the well data is verified by a third party',c:'Cost: the story being told without you',e:{rep:-6,com:-3,tur:-3},flag:'greenhush',
+     f:'Silence communicates too, and in a crisis it communicates guilt. The story ran anyway, with other sources, and the guest posted without your side. Greenhushing at the worst possible moment.',k:'Greenhushing'},
+    {l:'A radio interview with data, and no public response to the viral post',c:'Cost: the global conversation',e:{rep:1,com:2,tur:-2},
+     f:'You spoke to the town and stayed silent with the world: the radio believed you; the post lived on without your side. Selective transparency is half transparency.',k:'Selective transparency'},
+    {l:'Hire a crisis agency and make its consultant the spokesperson',c:'Cost: fees and closeness',e:{rep:1,com:-2,eco:-3,mot:-1},
+     f:'A spokesperson who doesn’t live in the town or know what happens on the floor: polished on the radio, a stranger at the assembly. The agency got paid; the trust never arrived.',k:'Spokesperson · access to real information'}]}
+ ],
+ qc:['In Mitchell, Agle and Wood’s model, who usually has power without legitimacy, and who has legitimacy without urgency? Whom can you ignore in a crisis, and at what risk?','Oatly and Tony’s publish their own problems. Under what conditions does radical transparency build trust, and under which does it just hand over ammunition?','H&M didn’t lie deliberately; it used an index that turned out to be misleading. How do you avoid unintentional greenwashing? And what is the hidden cost of greenhushing: when is silence the right decision?','Compare how Volkswagen and Vale (at Brumadinho) responded in the first 72 hours. Which communication decisions were irreversible?']},
+
+/* ---------- STAGE 9 · Session 9 ---------- */
+{n:9, mes:'May', t:'Closing the cycle',
+ ses:'Integrated strategy and AI', marco:'Six capitals (Integrated Reporting), leverage points (Meadows), AI as a thinking partner (Mollick; Dell’Acqua et al.).',
+ ctx:'The first rains arrive. Diesel has come down a little, but it won’t return to its old prices, and the IMN is already talking about the next cycle. The owners want an integrated strategy for the annual board meeting: what we learned, what stays in place, how we decide next time. Valeria proposes using AI to build scenarios; Esteban is wary; Rodrigo wants a “pretty” report.',
+ evs:()=>{const ev=[];
+   if(has('asada')){apply({com:2,amb:1});ev.push(['ok','The agreement with the ASADA survived April: the tank fund already has its first contribution. (+2 Community, +1 Environmental)']);}
+   if(has('solar')){apply({eco:4,amb:1});ev.push(['ok','The panels are running and the loan KPI is on track: the preferential rate holds. (+4 Economic, +1 Environmental)']);}
+   if(has('diesel')){apply({eco:-4});ev.push(['bad','April’s diesel drained the low-season cash. (−4 Economic)']);}
+   if(has('alquiler')){apply({eco:-2});ev.push(['bad','You returned the rented generator; the solar decision is back on the table without the preferential rate. (−2 Economic)']);}
+   if(has('ppa')){apply({amb:1,eco:1});ev.push(['ok','The third party’s panels are running; the savings are smaller because the contract takes the margin. (+1 Environmental, +1 Economic)']);}
+   if(has('incentivos')){apply({mot:1});ev.push(['ok','The combined incentive lowered water and diesel use without hurting reviews. (+1 Team)']);}
+   if(has('guardianes')){apply({eco:3,tur:1});ev.push(['ok','Your guardians optimized consumption without being asked: the system you built pays dividends. (+3 Economic, +1 Guests)']);}
+   if(has('transp')){apply({tur:1,eco:3});ev.push(['ok','Dry-season guests have already rebooked for next season: pre-arrival honesty turned into loyalty. (+1 Guests, +3 Economic)']);}
+   if(has('incentivos')){apply({eco:3});ev.push(['ok','The water and diesel savings from the combined bonus show up in May’s EBITDA. (+3 Economic)']);}
+   if(has('apoyo')||has('familia')){apply({bie:3});ev.push(['ok','Sofía says her friends talk about the hotel; your partner says that this year you actually made it home for dinner. (+3 Wellbeing)']);}
+   if(has('datos')){apply({rep:1});ev.push(['ok','The April interview became the most-shared piece about the hotel — and a positive one. (+1 Reputation)']);}
+   return ev;},
+ dec:[
+  {q:'The integrated strategy for the board. How do you build it?',
+   v:[{w:'due',t:'We want to know whether the hotel is worth more or less than a year ago — and not just in money.'},
+      {w:'fin',t:'Six capitals sounds like poetry. I report one.'},
+      {w:'sos',t:'A single value logic: how each decision moved financial, natural, human, social, intellectual and manufactured capital.'},
+      {w:'mkt',t:'Make it a report we can publish.'}],
+   opts:[
+    {l:'An integrated report: materiality, value thesis, KPIs with baselines, financial case, governance, stakeholders, risks and review triggers, across six capitals',c:'Cost: weeks of cross-functional work',e:{due:4,rep:2,amb:1,mot:1,eco:2,bie:-2},flag:'integrado',
+     f:'You didn’t keep six separate sets of books: you showed how one investment lowered financial capital and raised the natural, human and relational capital that sustains future cash flows. For the first time, the board saw sustainability as a decision system, not as a chapter.',k:'Integrated reporting · six capitals'},
+    {l:'A marketing report with the year’s achievements',c:'Cost: credibility, if the story outruns the data',e:{rep:1,due:1},
+     mod:()=>(has('green')||has('foto')||has('plantilla'))?{rep:-5}:null,
+     fdyn:()=>(has('green')||has('foto')||has('plantilla'))?'The self-applause rang hollow: the community and the CST auditor remembered what was missing (−5 Reputation). A story without data is a boomerang.':'Celebrating is fine (+1 Reputation); celebrating with data, shared credit and what’s still missing would have been strategy.',
+     k:'Story vs. data'},
+    {l:'Annotated financial statements: the year’s results with brief notes on water and diesel',c:'Cost: the next crisis finding a spreadsheet',e:{due:-3,mot:-2,amb:-2},
+     f:'You reported one capital and lost the value logic: the next crisis will find a spreadsheet, not a strategy. What isn’t documented gets repeated.',k:'Fragmented strategy'},
+    {l:'A full GRI sustainability report, separate from the financial one, with external assurance',c:'Cost: two reports and two value logics',e:{rep:2,amb:1,due:1,eco:-3,bie:-2},flag:'gri_separado',
+     f:'Rigorous and parallel: two reports, two logics. The board read the financial one and skimmed the other. The data is there; the connection between water, diesel and margin still goes untold.',k:'GRI vs. integrated reporting'},
+    {l:'A twelve-slide presentation: the year’s five lessons and a roadmap',c:'Cost: a system that lives in your memory',e:{due:2,rep:1,mot:1,bie:1},
+     f:'Clear, brief and without a system: five lessons that depend on you remembering them. A roadmap without KPIs and baselines is a wish list with dates.',k:'Documented vs. tacit learning'}]},
+  {q:'Valeria proposes using AI to build scenarios for the next cycle: El Niño or La Niña, diesel, rates, flights. How do you use it?',
+   v:[{w:'sos',t:'To broaden options and synthesize forty reports. Then we validate with the ASADA, ICE and the hotel’s own data.'},
+      {w:'fin',t:'If the model gets one premise wrong, the conclusion changes. Who is accountable?'},
+      {w:'mkt',t:'Let the AI write the whole report; we’ll save weeks.'},
+      {w:'rh',t:'The team is worried that AI will decide for them.'}],
+   opts:[
+    {l:'AI as a thinking partner: scenarios, synthesis and alternatives; human validation of assumptions, causality and trade-offs; usage rules and accountability',c:'Cost: validation discipline',e:{mot:1,amb:1,eco:3,due:2,bie:2},flag:'ia_validada',
+     f:'You used the good zone of the jagged frontier (synthesis, hypotheses, scenarios) and respected the caution zone (causality, vulnerable stakeholders, ambiguous trade-offs). You accelerated learning without giving up judgment.',k:'The jagged frontier · Dell’Acqua et al. (2023) · Mollick'},
+    {l:'Have the AI draft the entire strategy and present it after a quick read',c:'Cost: judgment, not the task',e:{bie:3,due:-4,rep:-3,mot:-3},flag:'ia_ciega',
+     f:'You delegated the judgment, not the task: the strategy cited well data that doesn’t exist, and a neighbor at the board meeting noticed. AI broadens options; it doesn’t answer to the ASADA.',k:'Caution zone · human validation'},
+    {l:'Build the scenarios by hand with the team: AI stays out until there’s a usage policy',c:'Cost: weeks that other hotels are already saving',e:{bie:-2,mot:-1,eco:-1},
+     f:'You avoided a risk by giving up a capability: weeks of synthesis that other hotels already do in days. Discipline isn’t prohibiting; it’s validating.',k:'Co-intelligence'},
+    {l:'Commission the scenarios from a consulting firm that uses AI, with a report in two weeks',c:'Cost: the learning, which leaves with the report',e:{due:1,eco:-3,mot:-1,bie:1},
+     f:'You outsourced the synthesis, and the learning along with it: the report arrived impeccable and no one at the hotel knows how it was built. Next time you’ll pay again.',k:'Internal capability vs. external report'},
+    {l:'An AI pilot with only Valeria and Esteban; the rest of the team stays out until there are results',c:'Cost: confirming that AI is “for management”',e:{amb:1,due:1,mot:-2},
+     f:'Sensible and narrow: the two who knew the most learned the most; the team confirmed that AI is “for management.” The jagged frontier is better explored with more eyes.',k:'AI adoption · who learns'}]},
+  {q:'What do you leave in place? Leverage points.',
+   v:[{w:'sos',t:'Let’s change rules and information, not just parameters: a permanent water fund with the ASADA, open data, threshold-based protocols and an annual materiality review.'},
+      {w:'fin',t:'A permanent fund is a permanent cost.'},
+      {w:'due',t:'May the next El Niño find a system, not a hotel on its own.'},
+      {w:'fam',t:'And may it find you with energy.'}],
+   opts:[
+    {l:'Change rules and information: a water fund with the ASADA, open data, threshold-based protocols, annual materiality and your own sustainable rhythm',c:'Cost: permanent resources',e:{com:3,amb:2,rep:2,mot:1,bie:4,eco:-4},flag:'legado',
+     f:'You intervened high on Meadows’ ladder: rules, information and goals, not just parameters. The sustainable outcome will happen by design, not by exception. And you included yourself in the design.',k:'Leverage points · Meadows (1999)'},
+    {l:'Adjust parameters: slightly more demanding consumption targets',c:'Cost: little, and it changes little',e:{amb:1,eco:1},
+     f:'Incremental efficiency: useful, but low leverage. You adjusted a number in a system whose rules and incentives remain the same; the next drought will be a battle all over again.',k:'Low leverage · parameters'},
+    {l:'Turn the page: rest, nothing more',c:'Cost: letting what you learned evaporate',e:{bie:6,due:-2,amb:-2},
+     f:'Rest is legitimate and necessary. Just remember: what isn’t documented gets repeated.',k:'The learning cycle'},
+    {l:'Formalize a crisis manual for the next drought, with roles and thresholds',c:'Cost: little, and it leaves untouched what made the crisis necessary',e:{amb:1,mot:1,due:1},flag:'manual_crisis',
+     f:'You documented the response and left untouched the system that made it necessary: the well is still in dispute, the data is still closed and the ASADA still has no fund. A manual is a well-written parameter.',k:'Low leverage · procedures'},
+    {l:'Create a sustainability directorate for Valeria, with a seat on the board',c:'Cost: a permanent salary',e:{amb:2,mot:1,due:1,rep:1,eco:-3,bie:1},flag:'valeria_junta',
+     f:'You changed the structure — who decides — and that’s medium-high leverage. What you didn’t change: the water rules with the town, or your own rhythm. A good step; not the complete legacy.',k:'Medium leverage · decision structure'}]}
+ ],
+ qc:['Using Meadows’ twelve leverage points: at what level do most corporate sustainability initiatives intervene? What would be the highest-leverage intervention that no one has proposed?','Dell’Acqua et al. find that AI improves performance on tasks inside the “jagged frontier” and worsens it on those outside. Which parts of a sustainability strategy are inside, and which are outside?','Microsoft announces “carbon negative by 2030” while its emissions rise because of data centers. Is it a contradiction, a transition or greenwashing? What criterion did you use to answer?','An integrated report like Philips’s costs millions. What is the minimum viable version for a mid-sized company, and what can’t be missing?']}
+];
+
+/* ---- Unexpected event after session 6 ---- */
+const OFERTA = {
+ tag:'Unexpected event · after session 6',t:'The call from the Caribbean',
+ ctx:'The phone rings: a five-star resort in the Caribbean — with no water or generator problems — offers you the general manager position at 40% more salary. They want an answer within 72 hours. That night, Sofía asks whether this year you’ll actually go on vacation.',
+ opts:[
+  {l:'Accept: you deserve a place without droughts',c:'Cost: this hotel, this community, this story',accept:true,hint:['rep','bie']},
+  {l:'Turn it down immediately and tell no one',c:'Cost: carrying the decision alone',e:{bie:-4},
+   f:'You chose to stay, but you carried the sacrifice in silence. Decisions that aren’t talked through weigh double.'},
+  {l:'Use the offer to renegotiate with the owners: resources, team and rest',c:'Cost: an uncomfortable conversation',e:{bie:7,eco:3,mot:2,due:1},flag:'apoyo',
+   f:'You turned an exit into leverage: the system now knows what you’re worth, and you negotiated conditions to lead without burning out.'},
+  {l:'Take 48 hours: talk it over with your family and your team',c:'Cost: two days of uncertainty',e:{bie:8,mot:2},flag:'familia',
+   f:'Pausing is also strategy. You came back with clarity: your purpose is here, and your family is inside the plan, not outside it.'}]
+};
+
+/* ================= System check: crises, dividends, endings ================= */
+function systemCheck(){
+  const out=[];
+  /* accumulated consequences of spending cuts */
+  for(const k in CUT_EVENTS){
+    for(const ce of CUT_EVENTS[k]){
+      const tag='cut_'+k+'_'+ce.at;
+      if(CUTS[k]>=ce.at && !has(tag)){ FLAGS.add(tag); const dlt=apply(ce.e); out.push({cls:'crisis',t:ce.t+' · cuts in '+CUTAREAS[k].n.toLowerCase(),d:ce.d,chips:dlt}); }
+    }
+  }
+  for(const cf of CUT_FATIGUE){ const tag='cut_fatiga_'+cf.at; if(totalCuts()>=cf.at && !has(tag)){ FLAGS.add(tag); const dlt=apply(cf.e); out.push({cls:'crisis',t:cf.t+' · '+totalCuts()+' cuts',d:cf.d,chips:dlt}); } }
+  for(const d of DIMS){
+    const k=d.k;
+    if(S[k]<50){
+      if(!has('cr_'+k)){
+        FLAGS.add('cr_'+k);
+        const c=CRISIS[k]; let e=c.e, x='';
+        if(c.fn){const r=c.fn(); e=r.e; x=r.x;}
+        const dlt=apply(e);
+        out.push({cls:'crisis',t:c.t+' · '+d.n+' below 50',d:c.d+(x?' '+x:''),chips:dlt});
+      } else {
+        apply({[k]:-2});
+        out.push({cls:'bad',t:d.n+' still below 50',d:'The crisis hasn’t been resolved and is getting worse: every month without a response costs more. (−2 '+d.n+')'});
+      }
+    }
+  }
+  for(const d of DIMS){
+    const k=d.k;
+    if(S[k]>=80 && !has('bo_'+k)){
+      FLAGS.add('bo_'+k);
+      const b=BONUS[k]; const dlt=apply(b.e);
+      out.push({cls:'bonus',t:b.t+' · '+d.n+' above 80',d:b.d,chips:dlt});
+    }
+  }
+  OVER=overCheck();
+  return out;
+}
+function overCheck(){
+  if(S.eco<30) return 'quiebra';
+  if(S.bie<25) return 'colapso';
+  if(S.com<25) return 'bloqueo';
+  if(S.mot<25) return 'renuncia';
+  if(S.rep<25) return 'marca';
+  if(S.amb<25) return 'clausura';
+  if(S.tur<25) return 'vacio';
+  if(S.due<25) return 'despido';
+  if(DIMS.filter(d=>S[d.k]<50).length>=5) return 'sistemico';
+  return null;
+}
+function eventsHtml(evs){
+  return evs.map(e=>{
+    if(Array.isArray(e)) return `<div class="notice ${e[0]==='bad'?'bad':''}">${e[1]}</div>`;
+    return `<div class="notice ${e.cls}"><b>${e.t}</b>${e.d}${e.chips?chipsHtml(e.chips).replace('class="chips"','class="chips" style="margin-top:.4rem;margin-bottom:0"'):''}</div>`;
+  }).join('');
+}
+
+/* ================= Intro ================= */
+function intro(){
+  reset();
+  document.getElementById('scoreboard').style.display='none';
+  const sv=load();
+  const canResume = sv && sv.S && typeof sv.si==='number' && sv.si<STAGES.length;
+  screen(`
+   <div class="hero">
+     <div class="eyebrow">Decision simulation · Creating Value through Sustainability</div>
+     <h1>Dry Season: nine decisions</h1>
+     <p>You run a sustainable boutique hotel in Guanacaste, Costa Rica. A strong El Niño hits in the middle of high season and, at the same time, a fuel crisis drives up the cost of diesel, flights and electricity. Each stage corresponds to one session of the course. Every option costs something; part of the game is figuring out what, before you choose.</p>
+   </div>
+   <p class="ctx"><b>Your mission:</b> keep the hotel open and desirable, prove with data that it is sustainable, look after the relationship with the community, support suppliers and tour operators, protect your team, keep the owners’ trust… and not lose yourself along the way.</p>
+   <p class="ctx" style="font-size:.85rem">In every decision you’ll hear from your management team — Valeria (Sustainability), Rodrigo (Marketing), Marcela (Human Resources), Esteban (Finance) — as well as the owners, outside stakeholders and your family. They’ll rarely agree.</p>
+   <div class="dimlist">
+     ${DIMS.map(d=>`<div><span class="ic">${d.ic}</span><span><b>${d.n}.</b> ${d.d}</span></div>`).join('')}
+   </div>
+   <div class="rules">
+     <div class="r1"><b>&lt; 50</b>Crisis zone: cash in the red, resignations, protests, burnout, regulatory cases. If it keeps falling, the hotel can go bankrupt or you can be forced out of the game.</div>
+     <div class="r2"><b>≥ 80</b>Excellence zone: green credit, press coverage, a premium rate, a team that innovates on its own. Economic and sustainable results at the same time.</div>
+    </div>
+    <div class="rules" style="grid-template-columns:1fr">
+     <div class="r1" style="background:var(--tint);color:var(--goldd)"><b>Cut spending</b>In every decision you can also make a cut in one area: maintenance, staff, marketing or the environmental program. It improves cash today; what it costs in other areas, and when, is part of what the game lets you discover.</div>
+   </div>
+   <p class="ctx" style="font-size:.82rem;color:var(--gray)">The decisions you make in one session change the options and events of the following ones. Your progress is saved on this device: you can play one stage per session.</p>
+   ${idBoxHtml()}
+   ${canResume?`<button class="btn gold" onclick="resume()">Continue where I left off · Stage ${sv.si+1}</button>
+   <button class="btn ghost" onclick="clearSave();startGame()">Start over</button>`:
+   `<button class="btn gold" onclick="startGame()">Start at session 1</button>`}
+   <p class="ctx" style="font-size:.78rem;color:var(--gray);margin:1rem 0 .2rem"><b>For the classroom:</b> start directly at a given session (board at a neutral state, no history).</p>
+   <div class="jump">${STAGES.map(s=>`<button class="${isUnlocked(s.n)?'':'locked'}" onclick="jumpTo(${s.n})" title="Session ${s.n}: ${s.ses}${isUnlocked(s.n)?'':' · key required'}">${s.n}</button>`).join('')}</div>
+   ${CONFIG.CLAVES&&Object.keys(CONFIG.CLAVES).length?`<p class="small" style="text-align:left;margin-top:.4rem">Key-protected sessions open with the code handed out in class each day; once unlocked, a session stays available on this device.</p>`:''}
+   <p class="small">A teaching tool for the course Creating Value through Sustainability · INCAE · JGG</p>`);
+}
+function idBoxHtml(){
+  const id=loadIdentity()||{}; const name=PLAYER.name||id.name||'', group=PLAYER.group||id.group||'';
+  const reg=!!CONFIG.SHEET_ENDPOINT;
+  return `<div class="idbox">
+   <label for="pname">Your name or participant code${reg?'':' <span style="font-weight:400">(optional)</span>'}</label>
+   <input id="pname" type="text" maxlength="60" autocomplete="name" value="${name.replace(/"/g,'&quot;')}" placeholder="e.g., Ana Rojas · MBA 2026">
+   ${CONFIG.GRUPO_FIJO?'':`<label for="pgroup">Group or section <span style="font-weight:400">(optional)</span></label>
+   <input id="pgroup" type="text" maxlength="40" value="${group.replace(/"/g,'&quot;')}" placeholder="e.g., Section A">`}
+   <div class="idnote">${reg?'Your results are logged automatically when each session closes and when you finish, along with your name and your decisions.':'It is used in the summary you can copy at the end.'}</div>
+   <div class="idwarn" id="idwarn">Enter your name or code so your results can be logged.</div>
+  </div>`;
+}
+function readIdentity(){
+  const n=document.getElementById('pname'), g=document.getElementById('pgroup');
+  PLAYER.name=(n?n.value:'').trim(); PLAYER.group=CONFIG.GRUPO_FIJO||(g?g.value:'').trim();
+  if(CONFIG.SHEET_ENDPOINT && !PLAYER.name){ const w=document.getElementById('idwarn'); if(w)w.style.display='block'; if(n)n.focus(); return false; }
+  saveIdentity(); return true;
+}
+function startGame(){ if(!readIdentity())return; reset(); stageIdx=0; stageIntro(); }
+function jumpTo(n){ if(!readIdentity())return; reset(); S={...NEUTRAL}; stageIdx=n-1; PLAYER.modo='session '+n; stageIntro(); }
+function resume(){
+  const sv=load(); if(!sv){intro();return;}
+  reset();
+  S={...sv.S}; FLAGS=new Set(sv.F||[]); LOG=sv.LOG||[]; stageIdx=sv.si; decIdx=sv.di||0; CHECK=sv.CHECK||null; CHECK_PREV=sv.CHECK_PREV||null; CUTS=sv.CUTS||{mant:0,pers:0,mkt:0,amb:0}; CUT=null; if(sv.PLAYER) PLAYER={...PLAYER,...sv.PLAYER}; if(!PLAYER.partida) PLAYER.partida=newId();
+  if(sv.phase==='gate') stageIntro();
+  else if(sv.phase==='close') stageClose();
+  else if(sv.phase==='oferta') showOferta();
+  else if(sv.phase==='dec'){ if(decIdx>=STAGES[stageIdx].dec.length) stageClose(); else showDecision(); }
+  else stageIntro();
+}
+
+/* ================= Stage flow ================= */
+function stageIntro(){
+  const st=STAGES[stageIdx];
+  if(!isUnlocked(st.n)){ gateScreen(); return; }
+  CHECK_PREV=CHECK; CHECK=snapshot();
+  renderBoard('Session '+st.n+' · '+st.mes);
+  const evs=[...st.evs(), ...systemCheck()];
+  renderBoard('Session '+st.n+' · '+st.mes);
+  if(OVER){ gameOver(OVER, CHECK_PREV||CHECK, 'Session '+st.n+' · '+st.mes); return; }
+  decIdx=0; save('dec');
+  screen(`
+   <div class="eyebrow">Stage ${st.n} · ${st.mes}</div>
+   <h2>${st.t}</h2>
+   <div class="sesion"><b>Session ${st.n}: ${st.ses}.</b> ${st.marco}</div>
+   <p class="ctx">${st.ctx}</p>
+   ${evs.length?'<h3>What happened since the last session</h3>':''}
+   ${eventsHtml(evs)}
+   <button class="btn" onclick="decIdx=0;showDecision()">See the first decision</button>`);
+}
+function gateScreen(){
+  const st=STAGES[stageIdx];
+  renderBoard('Session '+st.n+' · access');
+  save('gate');
+  screen(`
+   <div class="eyebrow">Stage ${st.n} · ${st.mes}</div>
+   <h2>${st.t}</h2>
+   <div class="gate">
+     <div class="sesion" style="margin:0 0 .5rem"><b>Session ${st.n}: ${st.ses}.</b> This stage is unlocked in class.</div>
+     <label for="gkey" style="font-size:.85rem">Enter the key your instructor gives you for session ${st.n}</label>
+     <input id="gkey" type="text" maxlength="12" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="····" onkeydown="if(event.key==='Enter')tryKey()">
+     <div class="gerr" id="gerr"></div>
+     <button class="btn" onclick="tryKey()">Open session ${st.n}</button>
+     <div class="ghint">Your progress so far is saved on this device. You can close this and come back when you have the key.</div>
+   </div>
+   <button class="btn ghost" onclick="intro()">Back to the start</button>`);
+  setTimeout(()=>{ const i=document.getElementById('gkey'); if(i) i.focus(); },80);
+}
+function tryKey(){
+  const st=STAGES[stageIdx], i=document.getElementById('gkey'), e=document.getElementById('gerr');
+  if(checkKey(st.n, i?i.value:'')){ markUnlocked(st.n); stageIntro(); return; }
+  if(e){ e.textContent='Wrong key for session '+st.n+'. Check with your instructor.'; }
+  if(i){ i.value=''; i.focus(); }
+}
+let ORDER=[];
+function shuffled(n){ const a=[...Array(n).keys()]; for(let i=n-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; }
+function showDecision(){
+  const st=STAGES[stageIdx], d=st.dec[decIdx];
+  ORDER=shuffled(d.opts.length);
+  renderBoard('Session '+st.n+' · '+st.mes);
+  screen(`
+   <div class="eyebrow">Stage ${st.n} · ${st.mes} · decision ${decIdx+1} of ${st.dec.length}</div>
+   <div class="qcard">
+     <div class="q">${d.q}</div>
+     ${d.v?'<h3 style="margin-top:0">What you hear around the table</h3>':''}
+     ${voicesHtml(d.v)}
+     <h3>What do you decide?</h3>
+     ${ORDER.map(i=>`<button class="opt" onclick="choose(${i})"><b>${d.opts[i].l}</b>${affectsHtml(d.opts[i])}</button>`).join('')}
+     ${cutPanelHtml()}
+   </div>`);
+}
+function cutPanelHtml(){
+  CUT=null;
+  const n=totalCuts();
+  return `<div class="cutbox">
+     <div class="cut-t">Spending cut <span>· optional, applied along with your choice${n?` · ${n} so far`:''}</span></div>
+     <div class="cut-d">Esteban says it at every meeting: “there’s always something to cut.” It improves cash immediately; the savings dry up if you keep cutting the same area, and the area you cut feels it, with consequences that accumulate.</div>
+     <div class="cut-chips">
+       <button class="cutc sel" data-cut="" onclick="setCut(null)">No cut</button>
+       ${Object.keys(CUTAREAS).map(k=>`<button class="cutc" data-cut="${k}" onclick="setCut('${k}')">${CUTAREAS[k].n}</button>`).join('')}
+     </div></div>`;
+}
+function setCut(k){
+  CUT=k;
+  document.querySelectorAll('.cutc').forEach(b=>b.classList.toggle('sel',(b.dataset.cut||null)===k));
+}
+function applyCut(){
+  if(!CUT||!CUTAREAS[CUT]) return null;
+  const k=CUT, a=CUTAREAS[k], n=CUTS[k];
+  const gain=CUT_GAIN[Math.min(n,CUT_GAIN.length-1)], m=CUT_MULT(n);
+  CUTS[k]=n+1;
+  const side={}; for(const d in a.e) side[d]=a.e[d]*m;
+  const dlt=apply(gain?{eco:gain, ...side}:side);
+  CUT=null;
+  const r=(gain?a.r:'There’s nothing left to cut here: the savings are zero and the damage continues.')+(m>1?' Each repeated cut hits harder than the last.':'');
+  return {k, n:a.n, dlt, r, gain};
+}
+function choose(i){
+  const st=STAGES[stageIdx], d=st.dec[decIdx], o=d.opts[i];
+  const delta = apply({...(o.e||{})});
+  const extra = o.mod ? (o.mod()||{}) : {};
+  merge(delta, apply(extra));
+  if(o.flag) (Array.isArray(o.flag)?o.flag:[o.flag]).forEach(f=>FLAGS.add(f));
+  if(o.unflag) FLAGS.delete(o.unflag);
+  let fb = o.fdyn ? o.fdyn() : (o.f||'');
+  if(o.fmod) fb += o.fmod();
+  const cut = applyCut();
+  LOG.push({et:'Session '+st.n, q:d.q, l:o.l, cut:cut?cut.n:null});
+  renderBoard('Session '+st.n+' · '+st.mes);
+  const last = decIdx>=st.dec.length-1;
+  if(last){ save('close'); } else { decIdx++; save('dec'); decIdx--; }
+  screen(`
+   <div class="eyebrow">Stage ${st.n} · ${st.mes}</div>
+   <p class="chosen">You chose: <b>${o.l}</b>${o.c?`<br><span style="font-style:italic">${o.c}</span>`:''}</p>
+   ${chipsHtml(delta)}
+   ${cut?`<div class="cut-note"><b>Cut in ${cut.n.toLowerCase()}</b> (${ord(CUTS[cut.k])} time): ${cut.r}</div>${chipsHtml(cut.dlt)}`:''}
+   <span class="fb-tag">COURSE DEBRIEF</span>
+   <div class="fb-box">${fb}</div>
+   ${o.k?`<p class="marco"><b>Framework:</b> ${o.k}</p>`:''}
+   <button class="btn" onclick="${last?'stageClose()':'decIdx++;showDecision()'}">${last?'Close session '+st.n:'Next decision'}</button>`);
+}
+function stageClose(){
+  const st=STAGES[stageIdx];
+  renderBoard('Session '+st.n+' · close');
+  save('close');
+  if(CONFIG.ENVIAR_POR_ETAPA && !(stageIdx>=STAGES.length-1)) sendRow('cierre_sesion');
+  const lows=DIMS.filter(d=>S[d.k]<50), highs=DIMS.filter(d=>S[d.k]>=80);
+  const isLast = stageIdx>=STAGES.length-1;
+  const oferta = stageIdx===5;
+  screen(`
+   <div class="eyebrow">End of session ${st.n} · ${st.mes}</div>
+   <h2>Where the board stands</h2>
+   ${scorebarsHtml()}
+   ${lows.length?`<div class="notice bad"><b>In the crisis zone: ${lows.map(d=>d.n).join(', ')}.</b>If they’re still below 50 when the next session starts, the system reacts: resignations, protests, cash in the red, burnout.</div>`:''}
+   ${highs.length?`<div class="notice bonus"><b>In the excellence zone: ${highs.map(d=>d.n).join(', ')}.</b>Above 80, the system starts paying dividends.</div>`:''}
+   <div class="qclase"><b>For class discussion · Session ${st.n}</b><ol>${(Array.isArray(st.qc)?st.qc:[st.qc]).map(q=>`<li>${q}</li>`).join('')}</ol></div>
+   <p class="ctx" style="font-size:.8rem;color:var(--gray)">Your progress is saved on this device. You can close this and come back at the next session.</p>
+   <button class="btn" onclick="${isLast?'ending()':(oferta?'showOferta()':'nextStage()')}">${isLast?'See the year’s results':(oferta?'Continue':'Continue to session '+(st.n+1)+(isUnlocked(st.n+1)?'':' · with today’s key'))}</button>
+   <button class="btn ghost" onclick="copyResumen(this)">Copy my progress</button>`);
+}
+function nextStage(){
+  stageIdx++;
+  if(stageIdx>=STAGES.length){ending();return;}
+  stageIntro();
+}
+
+/* ---- Event: the offer ---- */
+function showOferta(){
+  renderBoard('Event');
+  save('oferta');
+  screen(`
+   <div class="eyebrow">${OFERTA.tag}</div>
+   <h2>${OFERTA.t}</h2>
+   <p class="ctx">${OFERTA.ctx}</p>
+   <div class="qcard">
+     <div class="q">What do you answer?</div>
+     ${OFERTA.opts.map((o,i)=>`<button class="opt" onclick="chooseOferta(${i})"><b>${o.l}</b>${affectsHtml(o)}</button>`).join('')}
+   </div>`);
+}
+function chooseOferta(i){
+  const o=OFERTA.opts[i];
+  if(o.accept){LOG.push({et:'Event',q:OFERTA.t,l:o.l});endingCaribe();return;}
+  const delta=apply({...o.e});
+  if(o.flag)FLAGS.add(o.flag);
+  LOG.push({et:'Event',q:OFERTA.t,l:o.l});
+  renderBoard('Event');
+  screen(`
+   <div class="eyebrow">${OFERTA.tag}</div>
+   <p class="chosen">You chose: <b>${o.l}</b><br><span style="font-style:italic">${o.c}</span></p>
+   ${chipsHtml(delta)}
+   <span class="fb-tag">COURSE DEBRIEF</span>
+   <div class="fb-box">${o.f}</div>
+   <p class="marco"><b>Framework:</b> Personal sustainability · decision rhythm</p>
+   <button class="btn" onclick="nextStage()">Stay in Guanacaste</button>`);
+}
+
+/* ================= Endings ================= */
+function avg(){return Math.round(DIMS.reduce((a,d)=>a+S[d.k],0)/DIMS.length);}
+function nextSeason(){return Math.max(15,Math.min(98,Math.round(S.tur*0.45+S.rep*0.3+S.com*0.25)));}
+function ebitda(){ const p=Math.round((S.eco-60)*0.8+(S.amb-60)*0.25); return (p>0?'+':'')+p+'%'; }
+function cst(){ return S.amb>=80?'Elite':(S.amb>=65?'Advanced':(S.amb>=50?'Basic':'At risk')); }
+function rotacion(){ return S.mot>=80?'Low':(S.mot>=65?'Normal':(S.mot>=50?'High':'Critical')); }
+function verdict(){
+  const a=avg(), lows=DIMS.filter(d=>S[d.k]<50).length, highs=DIMS.filter(d=>S[d.k]>=80).length;
+  if(lows===0 && highs===DIMS.length) return {cls:'win',t:'Regenerative benchmark',
+   d:'All eight dimensions above 80. The hotel closes the year with the best margin in its history, elite certification, the ASADA as a partner, suppliers who grew with you and a team that owns the system. The owners delegate strategy to you and your family recognizes you. INCAE asks to write the case.'};
+  if(lows===0 && highs>=6 && a>=80) return {cls:'win',t:'Shared value, proven',
+   d:'You turned the worst drought in decades and the most expensive diesel into a competitive advantage: economic and sustainable results at the same time, with data any third party can verify. One or two dimensions still need to reach the excellence zone; the system already knows how.'};
+  if(lows===0 && a>=70) return {cls:'mid',t:'Integrated strategy, under construction',
+   d:'The hotel ends the year standing and with structure: nothing fell below 50 and several decisions built capabilities. Sustainability still needs to change more business decisions, and results still need to reach the excellence zone.'};
+  if(lows<=1 && a>=58) return {cls:'mid',t:'Survived, with scars',
+   d:'The hotel makes it through the season, but one dimension ended up in the crisis zone and the system remembers it. Some decisions were costly and left lessons; others built structure. The next drought will tell which weighed more.'};
+  return {cls:'bad',t:'A lost season',
+   d:'The hotel survives, but with several dimensions in the crisis zone: harsh reviews, a distant community, a tired team, impatient owners or depleted cash. Next year starts uphill: trust will have to be rebuilt with actions.'};
+}
+function lessonsHtml(){
+  const L=[];
+  const ok=(c,t)=>{if(c)L.push(`<div class="ok">✔ ${t}</div>`)};
+  const miss=(c,t)=>{if(c)L.push(`<div class="miss">△ ${t}</div>`)};
+  ok(has('estrategia'),'Session 1 · You treated sustainability as strategy: it changed business decisions, not just the donations budget.');
+  ok(has('matriz'),'Session 2 · You prioritized with double materiality and outside validation: five topics with an owner are worth more than twenty by consensus.');
+  ok(has('linea_base'),'Session 3 · You built a baseline: every promise had a denominator, and that saved you in the crisis and with the bank.');
+  ok(has('rediseno')||has('circular'),'Session 4 · You redesigned the model instead of restricting it: scarcity became a value proposition and a source of productivity.');
+  ok(has('proveedores')||has('diligencia'),'Session 5 · You took the strategy into the supply chain: supplier development and due diligence with remediation.');
+  ok(has('solar')&&has('caso_honesto'),'Session 6 · You translated sustainability into finance with causality and sensitivity analysis, and declared the uncertainty.');
+  ok(has('incentivos')||has('experimento'),'Session 7 · You closed the purpose gap where it actually closes: well-designed incentives and resistance treated as information.');
+  ok(has('asada'),'Session 8 · You broke the tragedy of the commons with shared rules: the agreement with the ASADA was your best insurance.');
+  ok(has('datos'),'Session 8 · You communicated with evidence: progress, not perfection. Transparency turned the rumor into a conversation.');
+  ok(has('integrado')&&has('ia_validada'),'Session 9 · You integrated the pieces across six capitals and used AI to broaden options without giving up judgment.');
+  ok(has('legado'),'Session 9 · You intervened in rules and information, not just parameters: the next crisis will find a system.');
+  ok(has('guardianes'),'You built capabilities into the team: delegation had something to lean on, and burnout met resistance.');
+  ok(has('apoyo')||has('familia')||has('ritmo'),'You looked after your personal sustainability: you negotiated rhythm and support before burning out.');
+  miss(has('green')||has('claim_neutral'),'At some point your communication outran the evidence: greenwashing charges interest, and it collected.');
+  miss(has('pipas')||has('diesel'),'You treated symptoms by exporting costs to the aquifer, the town or the cash: water trucks and diesel buy time, and they buy conflict.');
+  miss(has('despidos')||has('recorte_horas')||has('terceriza'),'You relieved the cash by breaking capabilities and local jobs: in high-standard service, people are the system.');
+  miss(has('gaming'),'A badly designed incentive produced gaming: an isolated improvement was rewarded at the guest’s expense.');
+  miss(has('litigio')||has('negacion')||has('fila'),'You treated a stakeholder with legitimacy as if it had no power; it gained that power within a week.');
+  miss(has('ia_ciega'),'You delegated judgment to AI in the caution zone: unvalidated causal claims and facts reached the board.');
+  miss(!has('asada'),'Without a structural agreement with the community, every drought will be a battle over the aquifer all over again.');
+  miss(!has('linea_base'),'Without a baseline, the hotel’s sustainability remained a claim, not evidence.');
+  miss(S.bie<50,'The personal cost was high. Leadership that burns out is not sustainable, by definition.');
+  const tc=totalCuts(), maxc=Math.max(...Object.values(CUTS));
+  miss(tc>=8||maxc>=5,`You financed the strategy with cuts (${tc}): the savings showed up in the cash and the cost came in through other accounts: maintenance, people, channel or evidence. Cutting isn’t a strategy; it’s a transfer with a delay.`);
+  ok(tc>0&&tc<=5&&maxc<=2&&S.eco>=70,`You used cuts as a bridge, not as a strategy: only a few (${tc}), spread out, without breaking capabilities.`);
+  ok(tc===0&&S.eco>=80,'You reached the economic excellence zone without cutting: the margin came from redesigning, not from squeezing.');
+  return L.slice(0,8).join('');
+}
+function scorebarsHtml(){
+  return `<div class="score-final">${DIMS.map(d=>{
+    const v=S[d.k];const col=v<50?'var(--lowc)':(v>=80?'var(--highc)':'var(--midc)');
+    return `<div class="sf-row"><span class="nm">${d.n}</span><div class="bar"><div class="fill" style="width:${v}%;background:${col}"></div></div><span class="val">${v}</span></div>`;}).join('')}</div>`;
+}
+function kpisHtml(){
+  return `<div class="kpis">
+    <div class="kpi"><span>Projected occupancy, next season</span><b>${nextSeason()}%</b></div>
+    <div class="kpi"><span>EBITDA vs. plan</span><b>${ebitda()}</b></div>
+    <div class="kpi"><span>CST level</span><b>${cst()}</b></div>
+    <div class="kpi"><span>Team turnover</span><b>${rotacion()}</b></div>
+  </div>`;
+}
+function logHtml(){
+  const tc=totalCuts();
+  const head=tc?`<div class="notice bad"><b>Spending cuts: ${tc}.</b> ${Object.keys(CUTS).filter(k=>CUTS[k]).map(k=>CUTAREAS[k].n+' ×'+CUTS[k]).join(' · ')}</div>`:'';
+  return head+`<ul class="loglist">${LOG.map(l=>`<li><b>${l.et}:</b> ${l.l}${l.cut?` <span style="color:var(--brick);font-size:.78rem">· cut in ${l.cut.toLowerCase()}</span>`:''}</li>`).join('')}</ul>`;
+}
+function ending(){
+  CHECK_PREV=CHECK; CHECK=snapshot();
+  const evs=systemCheck();
+  renderBoard('Year-end');
+  if(OVER){ gameOver(OVER, CHECK, 'Year-end'); return; }
+  const v=verdict();
+  if(S.bie<50) v.d += ' There’s a separate bill: you ended the year on the edge of burnout. The hotel won a season; you lost months of energy that nobody accounts for.';
+  clearSave();
+  screen(`
+   <div class="eyebrow">The year’s results · Dry Season</div>
+   <div class="ending ${v.cls}"><h2>${v.t}</h2><p>${v.d}</p></div>
+   ${evs.length?'<h3>What happened as the year closed</h3>'+eventsHtml(evs):''}
+   ${kpisHtml()}
+   ${scorebarsHtml()}
+   <span class="fb-tag">YOUR DECISIONS</span>
+   ${logHtml()}
+   <span class="fb-tag">COURSE LESSONS</span>
+   <div class="lessons" style="margin-top:.5rem">${lessonsHtml()}</div>
+   <p class="sendstatus" id="sendstatus"></p>
+   <button class="btn gold" onclick="copyResumen(this)">Copy my summary</button>
+   <button class="btn ghost" onclick="intro()">Play again</button>
+   <p class="small">A teaching tool for the course Creating Value through Sustainability · INCAE · JGG</p>`);
+  sendRow('final');
+}
+function gameOver(type, retry, when){
+  const o=OVERS[type];
+  const lows=DIMS.filter(d=>S[d.k]<50);
+  window._retry=retry;
+  screen(`
+   <div class="eyebrow">Game over · ${when}</div>
+   <div class="ending bad"><h2>${o.t}</h2><p>${o.d}</p></div>
+   ${lows.length?`<div class="notice bad"><b>Dimensions below 50:</b> ${lows.map(d=>d.n+' ('+S[d.k]+')').join(', ')}.</div>`:''}
+   ${scorebarsHtml()}
+   <span class="fb-tag">YOUR DECISIONS</span>
+   ${logHtml()}
+   <span class="fb-tag">WHAT THE SYSTEM IS TELLING YOU</span>
+   <div class="lessons" style="margin-top:.5rem">${lessonsHtml()}</div>
+   <p class="sendstatus" id="sendstatus"></p>
+   ${retry?`<button class="btn gold" onclick="retryStage()">Go back to stage ${retry.si+1} and decide differently</button>`:''}
+   <button class="btn ghost" onclick="copyResumen(this)">Copy my summary</button>
+   <button class="btn ghost" onclick="clearSave();intro()">Play again</button>
+   <p class="small">A teaching tool for the course Creating Value through Sustainability · INCAE · JGG</p>`);
+  sendRow('fin_de_juego');
+}
+function retryStage(){
+  const c=window._retry; if(!c){intro();return;}
+  restore(c);
+  CHECK=null; CHECK_PREV=null;
+  stageIntro();
+}
+function endingCaribe(){
+  const solid = has('guardianes') && (has('matriz')||has('linea_base'));
+  apply({rep: solid ? -5 : -10, bie: -3});
+  renderBoard('Ending');
+  clearSave();
+  const brandCost = solid ?
+   'In the tourism industry — which is small and talks — the story that travels with you isn’t just the new title: it’s that you left in the middle of a drought (−5 Reputation). The structure you left behind softens the judgment, but doesn’t erase it: leaders are remembered for how they stay… and for how they leave.' :
+   'In the tourism industry — which is small and talks — the story that travels with you isn’t the new title: it’s that you abandoned a team and a company in the middle of a crisis (−10 Reputation). That label reaches the Caribbean before your first meeting, and it weighs on you at night too (−3 Wellbeing).';
+  const hotelFate = solid ?
+   'The team you trained and the measurement structure kept the hotel going without you: it closed the season standing, and they said goodbye with gratitude. You left it better than you found it: the mark of leadership that builds systems, not dependencies.' :
+   'With no built-in capabilities or structure, the hotel improvised for the rest of the season: harsh reviews, a distant community, a team adrift. The system that depended on you left with you.';
+  screen(`
+   <div class="eyebrow">Alternative ending · The call from the Caribbean</div>
+   <div class="ending ${solid?'mid':'bad'}"><h2>A new life in the Caribbean</h2>
+   <p>You accepted. In the Caribbean there’s water to spare, and the salary covers the vacation Sofía was asking for. ${hotelFate}</p>
+   <p style="margin-top:.5rem"><b>Your personal brand:</b> ${brandCost}</p>
+   <p style="margin-top:.5rem"><i>The question that travels with you: was water the problem, or what you hadn’t yet built to lead through it?</i></p></div>
+   ${scorebarsHtml()}
+   <span class="fb-tag">YOUR DECISIONS UP TO YOUR DEPARTURE</span>
+   ${logHtml()}
+   <p class="sendstatus" id="sendstatus"></p>
+   <button class="btn gold" onclick="copyResumen(this)">Copy my summary</button>
+   <button class="btn ghost" onclick="intro()">Play again</button>
+   <p class="small">A teaching tool for the course Creating Value through Sustainability · INCAE · JGG</p>`);
+  sendRow('caribe');
+}
+function copyResumen(btn){
+  let t='DRY SEASON · Nine decisions · My board\n';
+  if(PLAYER.name) t+=`Participant: ${PLAYER.name}${PLAYER.group?' · '+PLAYER.group:''}\n`;
+  t+=DIMS.map(d=>`${d.n}: ${S[d.k]}`).join(' · ')+'\n';
+  t+=`Average: ${avg()} · Next-season occupancy: ${nextSeason()}% · EBITDA vs. plan: ${ebitda()} · CST: ${cst()}\n`;
+  if(OVER) t+=`Game over: ${OVERS[OVER].t}\n`;
+  else if(stageIdx>=STAGES.length-1 && LOG.length>=24) t+=`Result: ${verdict().t}\n`;
+  const tc=totalCuts(); if(tc) t+=`Spending cuts: ${tc} (${Object.keys(CUTS).filter(k=>CUTS[k]).map(k=>CUTAREAS[k].n+' ×'+CUTS[k]).join(', ')})\n`;
+  t+='\nDecisions:\n'+LOG.map(l=>`- ${l.et}: ${l.l}${l.cut?' [cut: '+l.cut+']':''}`).join('\n');
+  const done=()=>{const old=btn.textContent;btn.textContent='Copied ✓';setTimeout(()=>btn.textContent=old,1800)};
+  if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(done).catch(()=>{fb(t);done();});}
+  else{fb(t);done();}
+  function fb(x){const ta=document.createElement('textarea');ta.value=x;document.body.appendChild(ta);ta.select();try{document.execCommand('copy')}catch(e){}document.body.removeChild(ta);}
+}
+
+intro();
+</script>
+<!-- JGG -->
+</body>
+</html>
